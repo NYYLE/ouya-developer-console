@@ -37,6 +37,27 @@ class AppController extends Controller
      *
      * @return void
      */
+
+     public $helpers = [
+            'Form' => [
+                'className' => 'Bootstrap.Form'
+            ],
+            'Html' => [
+                'className' => 'Bootstrap.Html'
+            ],
+            'Modal' => [
+                'className' => 'Bootstrap.Modal'
+            ],
+            'Navbar' => [
+                'className' => 'Bootstrap.Navbar'
+            ],
+            'Paginator' => [
+                'className' => 'Bootstrap.Paginator'
+            ],
+            'Panel' => [
+                'className' => 'Bootstrap.Panel'
+            ]
+    ];
     public function initialize()
     {
         parent::initialize();
