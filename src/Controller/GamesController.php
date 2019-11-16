@@ -9,16 +9,19 @@ class GamesController extends AppController
 {
     public function index()
     {
-        $this->loadComponent('Paginator');
-        $games = $this->Paginator->paginate($this->Games->find());
-        $this->set(compact('games'));
-    }
-
-    public function view($id)
-    {
         $http = new Client();
 
         $response = $http->get('http://ouya.dcrich.net:35791/api/v1/gamedata/com.ATG.DU');
+        $array = array($response->getJson());
+        $games = $array;
+        $this->set(compact('games'));
+    }
+
+    public function view($package_name)
+    {
+        $http = new Client();
+
+        $response = $http->get('http://ouya.dcrich.net:35791/api/v1/gamedata/' . $package_name);
         $game = $response->getJson();
 
         $this->set(compact('game'));

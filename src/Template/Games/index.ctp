@@ -11,16 +11,16 @@
 
 <!-- Here's where we iterate through our $games query object, printing out article info -->
 
-<?php foreach ($games as $game): ?>
+<?php foreach ($games as $game):?>
     <tr>
         <td>
-            <?= $this->Html->link($game->title, ['action' => 'view', $game->id]) ?>
+            <?= $this->Html->link($game['title'], ['action' => 'view', 'com.ATG.DU']) ?>
         </td>
         <td>
-            <?= $game->created ?>
+            <?= $game['firstPublishedAt'] ?>
         </td>
         <td>
-            <?= $this->Html->link('Edit', ['action' => 'edit', $game->id]) ?>
+            <?= $this->Html->link('Edit', ['action' => 'edit', $game['packageName']]) ?>
         </td>
     </tr>
 <?php endforeach; ?>
