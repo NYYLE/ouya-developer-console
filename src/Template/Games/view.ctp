@@ -10,21 +10,24 @@
 .w3-badge {
   height:13px;width:13px;padding:0
 }
-.video-container {
-  position: relative;
-  padding-bottom: 56.25%;
-  padding-top: 30px; height: 0; overflow: hidden;
+.videowrapper {
+    float: none;
+    clear: both;
+    width: 100%;
+    position: relative;
+    padding-left: 2.5%;
+    padding-bottom: 56.25%;
+    padding-top: 25px;
+    height: 0;
+}
+.videowrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
-.video-container iframe,
-.video-container object,
-.video-container embed {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
 </style>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,11 +38,18 @@
 ?>
 
 
-
-<div class="container" style="padding-top: 50px">
+<div class="" style="padding-top: 50px">
   <h1 class="col-sm-12" style="padding-bottom: 50px; color: #fc4422; font-size: 55px;"><b><?= mb_strtoupper($game['title']); ?></b></h1>
 
-  <div class="video-container"><iframe width="853" height="480" src="https://www.youtube.com/embed/z9Ul9ccDOqE" frameborder="0" allowfullscreen></iframe></div>
+  <?php
+  if (isset($game['video'])) {
+    ?>
+    <div class="videowrapper">
+        <iframe class="col-sm-12" style="padding-bottom: 50px;" width="420" height="315" src="<?php echo $game['video']; ?>" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <?php
+  }
+  ?>
 
   <div class="col-sm-5">
     <p><?= $game['description']; ?></p>

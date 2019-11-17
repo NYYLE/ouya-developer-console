@@ -12,8 +12,9 @@ class GamesController extends AppController
         $http = new Client();
 
         $response = $http->get('http://ouya.dcrich.net:35791/api/v1/gamedata/com.ATG.DU');
-        $array = array($response->getJson());
+        $array = array($response->getJson(), $response->getJson(), $response->getJson(), $response->getJson());
         $games = $array;
+        //debug($games);
         $this->set(compact('games'));
     }
 
