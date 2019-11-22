@@ -32,7 +32,61 @@ class GamesController extends AppController
     {
        $game = $this->Games->newEntity();
        if ($this->request->is('post')) {
-           $game = $this->Games->patchEntity($game, $this->request->getData());
+          $screenshots = explode($this->request->data('screenshots'), ',');
+          $details = array();
+          foreach ($screenshots as $screenshot) {
+            $details[] = array(
+              'type' => 'image',
+              'url' => $screenshot,
+              'thumb' => $screenshot . '-thumb',
+            );
+          }
+
+          $game = array(
+            'packageName' => $this->request->data('package_name'),
+            'title' => $this->request->data('title'),
+            'description' => $this->request->data('description'),
+            'players' => $this->request->data('players'),
+            'genres' => $this->request->data('genres'),
+            'releases' => array(
+               'name' => $this->request->data('name'),
+               'versionCode' => $this->request->data('version_code'),
+               'uuid' => $this->request->data('uuid'),
+               'date' => $this->request->data('date'),
+               'url' => $this->request->data('url'),
+               'size' => $this->request->data('size'),
+               'md5sum' => $this->request->data('md5sum'),
+               'publicSize' => $this->request->data('public_size'),
+               'nativeSize' => $this->request->data('native_size'),
+             ),
+             'media' => array(
+               'discover' => $this->request->data('discover'),
+               'video' => $this->request->data('video'),
+               'screenshots' => $screenshots,
+               'details' => $details,
+             ),
+             'developer' => array(
+               'uuid' => $this->request->data('uuid'),
+               'name' => $this->request->data('name'),
+               'supportEmail' => $this->request->data('support_email'),
+               'supportPhone' => $this->request->data('support_phone'),
+               'founder' => $this->request->data('founder'),
+             ),
+             'contentRating' => $this->request->data('content_Rating'),
+             'website' => $this->request->data('website'),
+             'firstPublishedAt' => $this->request->data('first_published_at'),
+             'inAppPurchases' => $this->request->data('in_app_purchases'),
+             'overview' => $this->request->data('overview'),
+             'premium' => $this->request->data('premium'),
+           );
+
+
+   //
+   // "rating": {
+   //     "likeCount": 42,
+   //     "average": 3.26,
+   //     "count": 98
+   // }
 
            // Hardcoding the user_id is temporary, and will be removed later
            // when we build authentication out.
