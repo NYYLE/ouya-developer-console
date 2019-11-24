@@ -101,7 +101,7 @@ foreach ($games as $game) {
   }
   ?>
 <li style="<?php echo $style ?>">
-  <a href="/view">
+  <a href="../games/view/<?php echo $game['packageName'] ?>">
     <img class="posterImage" src="<?php echo $game['media']['discover'] ?>" data-original="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
     <noscript><img class="posterImage" src="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
     <div class="gamelistDetails">

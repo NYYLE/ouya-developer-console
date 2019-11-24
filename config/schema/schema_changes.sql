@@ -1,0 +1,31 @@
+/* GAMES TABLE */
+
+CREATE TABLE `games` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`user_id` INT(11) NOT NULL,
+	`title` VARCHAR(255) NOT NULL,
+	`data` VARCHAR(255) NOT NULL,
+	`published` DATETIME NULL DEFAULT NULL,
+	`modified` DATETIME NULL DEFAULT NULL,
+  `status` INT(11) NULL DEFAULT '0',
+	PRIMARY KEY (`id`),
+	INDEX `user_key` (`user_id`),
+	CONSTRAINT `user_key` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=2;
+
+/* USERS TABLE */
+
+CREATE TABLE `users` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`email` VARCHAR(255) NOT NULL,
+	`password` VARCHAR(255) NOT NULL,
+	`created` DATETIME NULL DEFAULT NULL,
+	`modified` DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=2;

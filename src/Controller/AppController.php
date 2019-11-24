@@ -16,6 +16,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\Core\Configure;
 
 /**
  * Application Controller
@@ -58,19 +59,24 @@ class AppController extends Controller
                 'className' => 'Bootstrap.Panel'
             ]
     ];
+
     public function initialize()
     {
-        parent::initialize();
-
-        $this->loadComponent('RequestHandler', [
-            'enableBeforeRedirect' => false,
-        ]);
         $this->loadComponent('Flash');
+        $this->loadComponent('Auth', [
+            'loginRedirect' => [
+                'controller' => 'Games',
+                'action' => 'index'
+            ],
+            'logoutRedirect' => [
+                'controller' => 'Games',
+                'action' => 'index',
+            ]
+        ]);
+    }
 
-        /*
-         * Enable the following component for recommended CakePHP security settings.
-         * see https://book.cakephp.org/3.0/en/controllers/components/security.html
-         */
-        //$this->loadComponent('Security');
+    public function beforeRender(Event $event) {
+      $this->set('User_username', $this->request->session()->read('Auth.User.username'));
+      $this->set('User_user_id', $this->request->session()->read('Auth.User.id'));
     }
 }

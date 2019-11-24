@@ -46,9 +46,20 @@ echo $this->Html->script([
       background-color: #f2f2f2;
       padding: 25px;
     }
+
+    body {
+      background: linear-gradient(70deg, #e6e6e6, #f7f7f7);
+      color: #514B64;
+      min-height: 100vh;
+    }
+
+    code {
+      background: #fff;
+      padding: 0.2rem;
+      border-radius: 0.2rem;
+      margin: 0 0.3rem;
+    }
   </style>
-
-
 <html>
 <head>
     <?= $this->Html->charset() ?>
@@ -65,21 +76,42 @@ echo $this->Html->script([
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
+
+    <?php echo $this->Html->script('jquery'); ?>
 </head>
 <body style="background-color: LightGray;">
-    <nav class="top-bar expanded" style="background-color: #000000;" data-topbar role="navigation">
-        <ul class="title-area large-3 medium-4 columns" style="background-color: #000000;">
-            <li class="name">
-                <h1><a href="">OUYA WORLD</a></h1>
-            </li>
-        </ul>
-        <div class="top-bar-section">
-            <ul class="right">
-                <li><a target="_blank" href="https://book.cakephp.org/3.0/"></a></li>
-                <li><a target="_blank" href="https://api.cakephp.org/3.0/"></a></li>
-            </ul>
-        </div>
-    </nav>
+  <!-- NAVBAR-->
+<nav class="navbar navbar-expand-md py-3 navbar-dark bg-dark shadow-sm">
+<div class="container">
+  <a href="#" class="navbar-brand">
+    <?php echo $this->Html->image('logo.png', ['alt' => 'OUYA WORLD', 'class' => 'd-inline-block align-middle mr-2', 'width' => 400]); ?>
+  </a>
+
+  <button type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><span class="navbar-toggler-icon"></span></button>
+
+  <div id="navbarSupportedContent" class="collapse navbar-collapse">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item"><a href="../games/index" class="nav-link">Games</a></li>
+      <li class="nav-item"><a href="../games/add" class="nav-link">Add</a></li>
+      <?php
+      if (!empty($User_username)) {
+        ?> <li class="nav-item"> <?php
+        echo $this->Html->link($User_username, array('controller' => 'users', 'action' => 'view'), array('class' => 'nav-link'));
+        ?> </li> <?php
+        ?> <li class="nav-item"> <?php
+        echo $this->Html->link('Log Out', array('controller' => 'users', 'action' => 'logout'), array('class' => 'nav-link'));
+        ?> </li> <?php
+      } else {
+        ?> <li class="nav-item"> <?php
+        echo $this->Html->link('Log In', array('controller' => 'users', 'action' => 'login'), array('class' => 'nav-link'));
+        ?> </li> <?php
+      }
+
+      ?>
+    </ul>
+  </div>
+</div>
+</nav>
     <?= $this->Flash->render() ?>
     <div class="container clearfix">
         <?= $this->fetch('content') ?>

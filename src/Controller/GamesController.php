@@ -4,9 +4,16 @@
 namespace App\Controller;
 
 use Cake\Network\Http\Client;
+use Cake\Event\Event;
+use Cake\Core\Configure;
 
 class GamesController extends AppController
 {
+    public function beforeFilter(Event $event)
+    {
+        $this->Auth->allow(['index', 'view']);
+    }
+
     public function index()
     {
         $http = new Client();
@@ -30,11 +37,12 @@ class GamesController extends AppController
 
     public function add()
     {
-      // $game = $this->Games->newEntity();
+       $game = $this->Games->newEntity();
+
        if ($this->request->is('post')) {
           $screenshots = array();
          if (!empty($this->request->data('screenshots'))) {
-          $screenshots = explode($this->request->data('screenshots'), ',');
+          $screenshots = explode(',', $this->request->data('screenshots'));
         }
           $details = array();
           foreach ($screenshots as $screenshot) {
@@ -44,7 +52,7 @@ class GamesController extends AppController
               'thumb' => $screenshot . '-thumb',
             );
           }
-
+          debug($this->request->data('apk'));
           $apk = new \ApkParser\Parser($this->request->data('apk')['tmp_name']);
 
           $manifest = $apk->getManifest();
@@ -58,8 +66,8 @@ class GamesController extends AppController
           $target_sdk_level = $manifest->getTargetSdkLevel();
           $target_sdk_platform = $manifest->getTargetSdk()->platform;
 
-          $game = array(
-            'packageName' => $this->request->data('package_name'),
+          $game_data = array(
+            'packageName' => $package_name,
             'title' => $this->request->data('title'),
             'description' => $this->request->data('description'),
             'players' => $this->request->data('players'),
@@ -106,15 +114,17 @@ class GamesController extends AppController
 
            // Hardcoding the user_id is temporary, and will be removed later
            // when we build authentication out.
-           //$game->user_id = 1;
-
-           // if ($this->Games->save($game)) {
-           //     $this->Flash->success(__('Your game has been saved.'));
-           //     return $this->redirect(['action' => 'index']);
-           // }
+           $game->user_id = $User_user_id;
+           $game->title = $this->request->data('title');
+           $game->data = json_encode($game_data);
+// debug(json_encode($game_data)); exit;
+           if ($this->Games->save($game)) {
+               $this->Flash->success(__('Your game has been saved.'));
+               return $this->redirect(['action' => 'index']);
+           }
            $this->Flash->error(__('Unable to add your game.'));
        }
-       //$this->set('game', $game);
+       $this->set('game', $game);
     }
 
     public function edit($id)
