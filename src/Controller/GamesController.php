@@ -30,9 +30,12 @@ class GamesController extends AppController
 
     public function add()
     {
-       $game = $this->Games->newEntity();
+      // $game = $this->Games->newEntity();
        if ($this->request->is('post')) {
+          $screenshots = array();
+         if (!empty($this->request->data('screenshots'))) {
           $screenshots = explode($this->request->data('screenshots'), ',');
+        }
           $details = array();
           foreach ($screenshots as $screenshot) {
             $details[] = array(
@@ -42,6 +45,19 @@ class GamesController extends AppController
             );
           }
 
+          $apk = new \ApkParser\Parser($this->request->data('apk')['tmp_name']);
+
+          $manifest = $apk->getManifest();
+          $permissions = $manifest->getPermissions();
+
+          $package_name = $manifest->getPackageName();
+          $version_name = $manifest->getVersionName();
+          $version_code = $manifest->getVersionCode();
+          $min_sdk_level = $manifest->getMinSdkLevel();
+          $min_sdk_platform = $manifest->getMinSdk()->platform;
+          $target_sdk_level = $manifest->getTargetSdkLevel();
+          $target_sdk_platform = $manifest->getTargetSdk()->platform;
+
           $game = array(
             'packageName' => $this->request->data('package_name'),
             'title' => $this->request->data('title'),
@@ -49,8 +65,8 @@ class GamesController extends AppController
             'players' => $this->request->data('players'),
             'genres' => $this->request->data('genres'),
             'releases' => array(
-               'name' => $this->request->data('name'),
-               'versionCode' => $this->request->data('version_code'),
+               'name' => $version_name,
+               'versionCode' => $version_code,
                'uuid' => $this->request->data('uuid'),
                'date' => $this->request->data('date'),
                'url' => $this->request->data('url'),
@@ -90,15 +106,15 @@ class GamesController extends AppController
 
            // Hardcoding the user_id is temporary, and will be removed later
            // when we build authentication out.
-           $game->user_id = 1;
+           //$game->user_id = 1;
 
-           if ($this->Games->save($game)) {
-               $this->Flash->success(__('Your game has been saved.'));
-               return $this->redirect(['action' => 'index']);
-           }
+           // if ($this->Games->save($game)) {
+           //     $this->Flash->success(__('Your game has been saved.'));
+           //     return $this->redirect(['action' => 'index']);
+           // }
            $this->Flash->error(__('Unable to add your game.'));
        }
-       $this->set('game', $game);
+       //$this->set('game', $game);
     }
 
     public function edit($id)
