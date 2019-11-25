@@ -9,11 +9,12 @@
 
 .gameslist li {
     margin: 0;
-    padding: 0;
+    padding-bottom: 5px;
     height: 195px;
     /* background: #fff; */
     position: relative;
     overflow: hidden;
+    border-radius: 10px;
 }
 
 .gameslist .posterImage {
@@ -95,9 +96,9 @@ span.ratingCount {
 $i = 0;
 foreach ($games as $game) {
   if ($i % 2) {
-    $style = "background-color: #f5f5f5;";
+    $style = "border-radius: 10px;";
   } else {
-    $style = "";
+    $style = "background-color: #ffffff; border-radius: 10px;";
   }
   ?>
 <li style="<?php echo $style ?>">

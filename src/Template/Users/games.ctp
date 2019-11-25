@@ -1,15 +1,15 @@
-<!-- File: src/Template/Games/admin.ctp -->
+<!-- File: src/Template/Users/games.ctp -->
 <style>
 .gameslist {
     list-style-type: none;
     padding: 0;
-    margin: 30px 0 165px 0;
+    margin: 30px 0 30px 0;
     background: url(/web/20190522062303im_/https://www.ouya.tv/wp-content/themes/ouya/images/games-top-border.png) no-repeat scroll 0 top;
 }
 
 .gameslist li {
     margin: 0;
-    padding-bottom: 5px;
+    padding-bottom: 5;
     height: 195px;
     /* background: #fff; */
     position: relative;
@@ -89,18 +89,18 @@ span.ratingCount {
 }
 </style>
 
-<h1>Games To Approve</h1>
+<h1>Rejected Games</h1>
 
 <!-- Here's where we iterate through our $games query object, printing out article info -->
 <ul class="gameslist">
 <?php
 $i = 0;
-foreach ($games as $game) {
+foreach ($rejected_games as $game) {
   //debug($game);
   if ($i % 2) {
-    $style = "background-color: #f5f5f5;";
+    $style = "background-color: #b1b1b1; border-radius: 10px;";
   } else {
-    $style = "background-color: #b1b1b1;";
+    $style = "background-color: #f5f5f5; border-radius: 10px;";
   }
   ?>
 <li style="<?php echo $style ?>">
@@ -118,8 +118,45 @@ foreach ($games as $game) {
       <div class="clearfix">
       </div>
     </div>
-    <?php echo $this->html->link('Approve', array('controller' => 'games', 'action' => 'approve', $game['id']), array('confirm' => 'Are you sure you want to approve ' . $game['game_data']['title'] . '?', 'class' => 'btn btn-success')); ?>
-    <?php echo $this->html->link('Reject', array('controller' => 'games', 'action' => 'reject', $game['id']), array('class' => 'btn btn-danger')); ?>
+    <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['game_data']['packageName']), array('class' => 'btn btn-secondary')); ?>
+  </div>
+</a>
+</li>
+<?php
+$i++;
+} ?>
+</ul>
+
+<h1>Submitted Games</h1>
+
+<!-- Here's where we iterate through our $games query object, printing out article info -->
+<ul class="gameslist">
+<?php
+$i = 0;
+foreach ($submitted_games as $game) {
+  //debug($game);
+  if ($i % 2) {
+    $style = "background-color: #f5f5f5; border-radius: 10px;";
+  } else {
+    $style = "background-color: #b1b1b1; border-radius: 10px;";
+  }
+  ?>
+<li style="<?php echo $style ?>">
+  <a href="../games/view/<?php echo $game['packageName']; ?>">
+    <img class="posterImage" src="<?php echo $game['media']['discover'] ?>" data-original="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
+    <noscript><img class="posterImage" src="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
+    <div class="gamelistDetails">
+      <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
+
+      <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
+      <div class="gameTaglist">
+        <div class="gameTag">Retro</div>
+        <div class="gameTag">Role-Playing</div>
+        <div class="gameTag">Arcade/Pinball</div>
+      <div class="clearfix">
+      </div>
+    </div>
+    <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['packageName']), array('class' => 'btn btn-secondary')); ?>
   </div>
 </a>
 </li>

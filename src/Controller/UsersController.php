@@ -9,9 +9,32 @@ use Cake\Core\Configure;
 
 class UsersController extends AppController {
 
-     public function index()
+     public function games()
      {
-         $this->set('users', $this->Users->find('all'));
+        $this->loadModel('Games');
+         $http = new Client();
+
+         $response = $http->get('http://ouya.dcrich.net:35791/api/v1/gamedata/com.ATG.DU');
+         $array = array($response->getJson(), $response->getJson(), $response->getJson(), $response->getJson());
+         $submitted_games = $array;
+         //debug($games);
+
+         $rejected_game_find = $this->Games->find('all', array(
+           'conditions' => array(
+             'status' => 2,
+             'user_id' => $this->request->session()->read('Auth.User.id')
+           ),
+         ));
+
+         $rejected_games = array();
+         foreach ($rejected_game_find as $game) {
+           $game['game_data'] = json_decode($game['data'], true);
+           $rejected_games[] = $game;
+         }
+
+         //debug($games);
+         $this->set('rejected_games', $rejected_games);
+         $this->set('submitted_games', $submitted_games);
      }
 
      public function view($id)

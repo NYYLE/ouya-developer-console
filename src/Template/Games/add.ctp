@@ -18,6 +18,6 @@
     echo $this->Form->file('apk');
 
   //  echo $this->Form->control('data', [));
-    echo $this->Form->submit('Save Game');
+    echo $this->Form->button('Add Game', array('class' => 'btn btn-success', 'type' => 'submit'));
     echo $this->Form->end();
 ?>

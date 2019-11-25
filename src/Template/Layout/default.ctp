@@ -94,9 +94,14 @@ echo $this->Html->script([
       <li class="nav-item"><a href="../games/index" class="nav-link">Games</a></li>
       <li class="nav-item"><a href="../games/add" class="nav-link">Add</a></li>
       <?php
+      if (!empty($User_admin) && $User_admin == '1') {
+        ?> <li class="nav-item"> <?php
+        echo $this->Html->link('Admin Panel', array('controller' => 'games', 'action' => 'admin'), array('class' => 'nav-link'));
+        ?> </li> <?php
+      }
       if (!empty($User_username)) {
         ?> <li class="nav-item"> <?php
-        echo $this->Html->link($User_username, array('controller' => 'users', 'action' => 'view'), array('class' => 'nav-link'));
+        echo $this->Html->link($User_username, array('controller' => 'users', 'action' => 'games'), array('class' => 'nav-link'));
         ?> </li> <?php
         ?> <li class="nav-item"> <?php
         echo $this->Html->link('Log Out', array('controller' => 'users', 'action' => 'logout'), array('class' => 'nav-link'));

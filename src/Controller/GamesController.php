@@ -25,6 +25,24 @@ class GamesController extends AppController
         $this->set(compact('games'));
     }
 
+    public function admin()
+    {
+        $game_records = $this->Games->find('all', array(
+          'conditions' => array(
+            'status' => 0
+          ),
+        ));
+
+        $games = array();
+        foreach ($game_records as $game) {
+          $game['game_data'] = json_decode($game['data'], true);
+          $games[] = $game;
+        }
+
+        //debug($games);
+        $this->set('games', $games);
+    }
+
     public function view($package_name)
     {
         $http = new Client();
@@ -139,6 +157,46 @@ class GamesController extends AppController
                 return $this->redirect(['action' => 'view', $id]);
             }
             $this->Flash->error(__('Unable to update your game.'));
+        }
+
+        $this->set('game', $game);
+    }
+
+    public function approve($id)
+    {
+       $this->autoRender = false;
+
+        $game = $this->Games->get($id);
+
+        // TODO: SEND GAMEDATA TO API
+
+        $game['status'] = 1;
+
+        if ($this->Games->save($game)) {
+            $this->Flash->success(__('The game has been approved.'));
+            return $this->redirect(['controller' => 'games', 'action' => 'index']);
+        }
+
+        $this->Flash->error(__('Unable to approve the game.'));
+
+        $this->set('game', $game);
+    }
+
+    public function reject($id)
+    {
+        $game = $this->Games->get($id);
+
+        if ($this->request->is(['post', 'put'])) {
+
+          $game['message'] = $this->request->data['message'];
+          $game['status'] = 2;
+
+          if ($this->Games->save($game)) {
+              $this->Flash->success(__('The game has been rejected.'));
+              return $this->redirect(['controller' => 'games', 'action' => 'index']);
+          }
+
+          $this->Flash->error(__('Unable to reject the game.'));
         }
 
         $this->set('game', $game);

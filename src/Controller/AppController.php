@@ -77,6 +77,7 @@ class AppController extends Controller
 
     public function beforeRender(Event $event) {
       $this->set('User_username', $this->request->session()->read('Auth.User.username'));
-      $this->set('User_user_id', $this->request->session()->read('Auth.User.id'));
+    //  $this->set('User_user_id', $this->request->session()->read('Auth.User.id'));
+      $this->set('User_admin', $this->request->session()->read('Auth.User.admin'));
     }
 }
