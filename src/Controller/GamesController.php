@@ -66,6 +66,8 @@ class GamesController extends AppController
           $target_sdk_level = $manifest->getTargetSdkLevel();
           $target_sdk_platform = $manifest->getTargetSdk()->platform;
 
+          $md5_sum = md5_file($this->request->data('apk')['tmp_name']);
+
           $game_data = array(
             'packageName' => $package_name,
             'title' => $this->request->data('title'),
@@ -76,12 +78,12 @@ class GamesController extends AppController
                'name' => $version_name,
                'versionCode' => $version_code,
                'uuid' => $this->request->data('uuid'),
-               'date' => $this->request->data('date'),
-               'url' => $this->request->data('url'),
-               'size' => $this->request->data('size'),
-               'md5sum' => $this->request->data('md5sum'),
-               'publicSize' => $this->request->data('public_size'),
-               'nativeSize' => $this->request->data('native_size'),
+               'date' => $this->request->data('date'), //
+               'url' => $this->request->data('url'), //
+               'size' => $this->request->data('size'), //
+               'md5sum' => $md5_sum,
+               'publicSize' => 0,
+               'nativeSize' => 0,
              ),
              'media' => array(
                'discover' => $this->request->data('discover'),

@@ -2,30 +2,22 @@
 
 <h1>Edit Game</h1>
 <?php
-    echo $this->Form->create($game, ['type' => 'file']);
-    // Hard code the user for now.
-    echo $this->Form->control('user_id', ['type' => 'hidden']);
-    echo $this->Form->control('package_name', ['type' => 'text']);
-    echo $this->Form->control('title', ['type' => 'text']);
-    echo $this->Form->control('description', ['type' => 'text']);
-    echo $this->Form->control('players', ['type' => 'number']);
+echo $this->Form->create($game, array('type' => 'file'));
+// Hard code the user for now.
 
-    echo $this->Form->control('genres', ['type' => 'text']); // Use select 2
+echo $this->Form->control('title', array('type' => 'text', 'required' => true));
+echo $this->Form->control('description', array('type' => 'text', 'rows' => 5, 'required' => true));
+echo $this->Form->control('players', array('type' => 'number', 'required' => true));
 
-    echo $this->Form->control('package_name', ['type' => 'text']);
+echo $this->Form->control('genres', array('type' => 'text', 'required' => true)); // Use select 2
 
-    // Releases
-    echo $this->Form->control('version_name', ['type' => 'text']);
+// media
+echo $this->Form->control('discover', array('type' => 'text', 'required' => true));
+echo $this->Form->control('video', array('type' => 'text', 'required' => false));
+echo $this->Form->control('screenshots', array('type' => 'text', 'required' => true));
+echo $this->Form->file('apk');
 
-    // media
-    echo $this->Form->control('discover', ['type' => 'text']);
-    echo $this->Form->control('video', ['type' => 'text']);
-    echo $this->Form->control('screenshots', ['type' => 'text']);
-    echo $this->Form->file('apk');
-
-    // Releases
-
-  //  echo $this->Form->control('data', ['rows' => '5']);
-    echo $this->Form->submit('Save Game');
-    echo $this->Form->end();
+//  echo $this->Form->control('data', [));
+echo $this->Form->submit('Save Game');
+echo $this->Form->end();
 ?>
