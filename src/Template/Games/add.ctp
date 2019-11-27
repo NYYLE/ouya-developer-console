@@ -12,10 +12,10 @@
     echo $this->Form->control('genres', array('type' => 'text', 'required' => true)); // Use select 2
 
     // media
-    echo $this->Form->control('discover', array('type' => 'text', 'required' => true));
-    echo $this->Form->control('video', array('type' => 'text', 'required' => false));
-    echo $this->Form->control('screenshots', array('type' => 'text', 'required' => true));
-    echo $this->Form->file('apk');
+    echo $this->Form->input('discover', array('label' => 'Discover Image', 'type' => 'file', 'required' => true));
+    echo $this->Form->input('video', array('label' => 'Video', 'type' => 'file', 'required' => false));
+    echo $this->Form->input('screenshots', array('label' => 'Screenshots', 'type' => 'file', 'multiple' => 'multiple', 'required' => true));
+    echo $this->Form->input('apk', array('label' => 'APK File', 'type' => 'file', 'required' => true));
 
   //  echo $this->Form->control('data', [));
     echo $this->Form->button('Add Game', array('class' => 'btn btn-success', 'type' => 'submit'));

@@ -48,12 +48,23 @@ class UsersController extends AppController {
          $user = $this->Users->newEntity();
          if ($this->request->is('post')) {
              // Prior to 3.4.0 $this->request->data() was used.
-             $user = $this->Users->patchEntity($user, $this->request->getData());
-             if ($this->Users->save($user)) {
-                 $this->Flash->success(__('The user has been saved.'));
-                 return $this->redirect(['action' => 'register']);
+             $user = $this->Users->find('all', array(
+               'conditions' => array(
+                 'username' => $this->request->data('username'),
+               ),
+             ));
+
+             if (empty($user)) {
+               $user = $this->Users->patchEntity($user, $this->request->getData());
+               $user->devUUID = com_create_guid(); 
+               if ($this->Users->save($user)) {
+                   $this->Flash->success(__('The user has been saved.'));
+                   return $this->redirect(['action' => 'login']);
+               }
+               $this->Flash->error(__('Unable to add the user.'));
+             } else {
+                $this->Flash->error(__('Username is already taken.'));
              }
-             $this->Flash->error(__('Unable to add the user.'));
          }
          $this->set('user', $user);
      }

@@ -58,19 +58,6 @@ class GamesController extends AppController
        $game = $this->Games->newEntity();
 
        if ($this->request->is('post')) {
-          $screenshots = array();
-         if (!empty($this->request->data('screenshots'))) {
-          $screenshots = explode(',', $this->request->data('screenshots'));
-        }
-          $details = array();
-          foreach ($screenshots as $screenshot) {
-            $details[] = array(
-              'type' => 'image',
-              'url' => $screenshot,
-              'thumb' => $screenshot . '-thumb',
-            );
-          }
-          debug($this->request->data('apk'));
           $apk = new \ApkParser\Parser($this->request->data('apk')['tmp_name']);
 
           $manifest = $apk->getManifest();
@@ -83,8 +70,35 @@ class GamesController extends AppController
           $min_sdk_platform = $manifest->getMinSdk()->platform;
           $target_sdk_level = $manifest->getTargetSdkLevel();
           $target_sdk_platform = $manifest->getTargetSdk()->platform;
-
           $md5_sum = md5_file($this->request->data('apk')['tmp_name']);
+
+          $host = 'statics.ouya.world';
+          $username = 'dh_q4dnv3';
+          $password = 'av^6H2^7';
+          $dev_uuid = $this->request->session()->read('Auth.User.uuid');
+
+          $connection = ssh2_connect($host, 22);
+          ssh2_auth_password($connection, $username, $password);
+debug($connection);
+          $sftp = ssh2_sftp($connection);
+debug($sftp);
+          $result = ssh2_sftp_mkdir($sftp, '/' . $this->request->session()->read('Auth.User.uuid') . '/' . $package_name);
+          $result2 = ssh2_scp_send($connection, $this->request->session()->read('Auth.User.uuid') . '/' . $package_name . '/' . $package_name . '_' . $version_name . '.apk', $this->request->data('apk')['tmp_name']);
+          debug($result);
+          debug($result2); exit;
+          $screenshots = array();
+          if (!empty($this->request->data('screenshots'))) {
+            $details = array();
+           foreach ($this->request->data('screenshots') as $index => $screenshot) {
+             //ssh2_scp_send($connection, $screenshot['tmp_name'], $this->request->session()->read('Auth.User.uuid') . '/' . 'ss' . $index .'.png', 0644);
+          //   ssh2_scp_send($connection, $screenshot['tmp_name'], $this->request->session()->read('Auth.User.uuid') . '/' . 'ss' . $index .'-thumb.png', 0644);
+             $details[] = array(
+               'type' => 'image',
+               'url' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . 'ss' . $index .'.png',
+               'thumb' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . 'ss' . $index .'-thumb.png',
+             );
+           }
+         }
 
           $game_data = array(
             'packageName' => $package_name,
@@ -95,10 +109,10 @@ class GamesController extends AppController
             'releases' => array(
                'name' => $version_name,
                'versionCode' => $version_code,
-               'uuid' => $this->request->data('uuid'),
-               'date' => $this->request->data('date'), //
-               'url' => $this->request->data('url'), //
-               'size' => $this->request->data('size'), //
+               'uuid' => $this->request->session()->read('Auth.User.uuid'),
+               'date' => '',//gmdate('Y-m-d\TH:i:s\Z', $date->format('U')),
+               'url' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $package_name . '_' . $version_name . '.apk',
+               'size' => filesize($this->request->data('apk')['tmp_name']),
                'md5sum' => $md5_sum,
                'publicSize' => 0,
                'nativeSize' => 0,
@@ -122,22 +136,17 @@ class GamesController extends AppController
              'inAppPurchases' => $this->request->data('in_app_purchases'),
              'overview' => $this->request->data('overview'),
              'premium' => $this->request->data('premium'),
+             "rating" => array(
+               "likeCount" => 0,
+               "average" => 0,
+               "count" => 0
+             )
            );
 
-
-   //
-   // "rating": {
-   //     "likeCount": 42,
-   //     "average": 3.26,
-   //     "count": 98
-   // }
-
-           // Hardcoding the user_id is temporary, and will be removed later
-           // when we build authentication out.
-           $game->user_id = $User_user_id;
+           $game->user_id = $this->request->session()->read('Auth.User.id');
            $game->title = $this->request->data('title');
            $game->data = json_encode($game_data);
-// debug(json_encode($game_data)); exit;
+
            if ($this->Games->save($game)) {
                $this->Flash->success(__('Your game has been saved.'));
                return $this->redirect(['action' => 'index']);

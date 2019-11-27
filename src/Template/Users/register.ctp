@@ -1,21 +1,10 @@
-<!-- src/Template/Users/reject.ctp -->
-
-<div class="modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Modal body text goes here.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- File: src/Template/Users/register.ctp -->
+<h1>Register In</h1>
+<?php
+echo $this->Form->create();
+echo $this->Form->control('username');
+echo $this->Form->control('email', array('label' => 'Contact Email'));
+echo $this->Form->control('password');
+echo $this->Form->button('Create Account', array('class' => 'btn btn-secondary', 'type' => 'submit'));
+echo $this->Form->end()
+?>
