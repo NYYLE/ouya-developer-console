@@ -75,27 +75,44 @@ class GamesController extends AppController
           $host = 'statics.ouya.world';
           $username = 'dh_q4dnv3';
           $password = 'av^6H2^7';
-          $dev_uuid = $this->request->session()->read('Auth.User.uuid');
+          $dev_uuid = '635c4cf6-6245-4100-a1a9-121759ad0323';
+          $remote_file = '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/';
 
           $connection = ssh2_connect($host, 22);
           ssh2_auth_password($connection, $username, $password);
-debug($connection);
+
           $sftp = ssh2_sftp($connection);
-debug($sftp);
-          $result = ssh2_sftp_mkdir($sftp, '/' . $this->request->session()->read('Auth.User.uuid') . '/' . $package_name);
-          $result2 = ssh2_scp_send($connection, $this->request->session()->read('Auth.User.uuid') . '/' . $package_name . '/' . $package_name . '_' . $version_name . '.apk', $this->request->data('apk')['tmp_name']);
-          debug($result);
-          debug($result2); exit;
+
+          if ($sftp != false) {
+
+
+
+          $result = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid);
+          $result2 = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name);
+
+          $stream = fopen("ssh2.sftp://$sftp$remote_file/" . $package_name . '_' . $version_name . '.apk', 'w');
+          $file = file_get_contents($this->request->data('apk')['tmp_name']);
+          fwrite($stream, $file);
+          fclose($stream);
+
           $screenshots = array();
           if (!empty($this->request->data('screenshots'))) {
             $details = array();
            foreach ($this->request->data('screenshots') as $index => $screenshot) {
-             //ssh2_scp_send($connection, $screenshot['tmp_name'], $this->request->session()->read('Auth.User.uuid') . '/' . 'ss' . $index .'.png', 0644);
-          //   ssh2_scp_send($connection, $screenshot['tmp_name'], $this->request->session()->read('Auth.User.uuid') . '/' . 'ss' . $index .'-thumb.png', 0644);
+             $stream = fopen("ssh2.sftp://$sftp$remote_file/" . "ss" . $index . '.png', 'w');
+             $file = file_get_contents($screenshot['tmp_name']);
+             fwrite($stream, $file);
+             fclose($stream);
+
+             $stream = fopen("ssh2.sftp://$sftp$remote_file/" . "ss" . $index . '-thumb.png', 'w');
+             $thumb_file = file_get_contents($screenshot['tmp_name']);
+             fwrite($stream, $thumb_file);
+             fclose($stream);
+
              $details[] = array(
                'type' => 'image',
-               'url' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . 'ss' . $index .'.png',
-               'thumb' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . 'ss' . $index .'-thumb.png',
+               'url' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+               'thumb' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
              );
            }
          }
@@ -152,6 +169,9 @@ debug($sftp);
                return $this->redirect(['action' => 'index']);
            }
            $this->Flash->error(__('Unable to add your game.'));
+         } else {
+           $this->Flash->error(__('Unable to upload file.'));
+         }
        }
        $this->set('game', $game);
     }
