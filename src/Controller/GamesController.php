@@ -82,30 +82,34 @@ class GamesController extends AppController
           ssh2_auth_password($connection, $username, $password);
 
           $sftp = ssh2_sftp($connection);
-
-          if ($sftp != false) {
-
-
-
-          $result = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid);
-          $result2 = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name);
-
-          $stream = fopen("ssh2.sftp://$sftp$remote_file/" . $package_name . '_' . $version_name . '.apk', 'w');
-          $file = file_get_contents($this->request->data('apk')['tmp_name']);
-          fwrite($stream, $file);
-          fclose($stream);
+          //
+          // if ($sftp != false) {
+          //
+          // $result = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid);
+          // $result2 = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name);
+          //
+          // $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '_' . $version_name . '.apk', 'w');
+          // debug($stream);
+          // stream_set_timeout($stream, 2);
+          // $file = file_get_contents($this->request->data('apk')['tmp_name']);
+          // $write = fwrite($stream, $file);
+          // debug($write);
+          // fclose($stream);
 
           $screenshots = array();
           if (!empty($this->request->data('screenshots'))) {
             $details = array();
-           foreach ($this->request->data('screenshots') as $index => $screenshot) {
-             $stream = fopen("ssh2.sftp://$sftp$remote_file/" . "ss" . $index . '.png', 'w');
-             $file = file_get_contents($screenshot['tmp_name']);
-             fwrite($stream, $file);
+           foreach ($this->request->data('screenshots') as $screenshot) {
+             $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
+
+             $file = $screenshot;
+             $write = fwrite($stream, $file);
+
              fclose($stream);
 
              $stream = fopen("ssh2.sftp://$sftp$remote_file/" . "ss" . $index . '-thumb.png', 'w');
-             $thumb_file = file_get_contents($screenshot['tmp_name']);
+
+             $thumb_file = $screenshot;
              fwrite($stream, $thumb_file);
              fclose($stream);
 
@@ -115,7 +119,8 @@ class GamesController extends AppController
                'thumb' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
              );
            }
-         }
+         // }
+         exit;
 
           $game_data = array(
             'packageName' => $package_name,
