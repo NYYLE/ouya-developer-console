@@ -82,103 +82,118 @@ class GamesController extends AppController
           ssh2_auth_password($connection, $username, $password);
 
           $sftp = ssh2_sftp($connection);
-          //
-          // if ($sftp != false) {
-          //
-          // $result = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid);
-          // $result2 = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name);
-          //
-          // $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '_' . $version_name . '.apk', 'w');
-          // debug($stream);
-          // stream_set_timeout($stream, 2);
-          // $file = file_get_contents($this->request->data('apk')['tmp_name']);
-          // $write = fwrite($stream, $file);
-          // debug($write);
-          // fclose($stream);
+
+          debug($sftp);
+
+          if ($sftp != false) {
+
+          $result = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid);
+          $result2 = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name);
+
+          $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '_' . $version_name . '.apk', 'w');
+          $file = file_get_contents($this->request->data('apk')['tmp_name']);
+          $write = fwrite($stream, $file);
+          fclose($stream);
+
+          debug($write);
+
+          $stream = fopen("ssh2.sftp://$sftp$remote_file" . 'discover.png', 'w');
+          $file = file_get_contents($this->request->data('apk')['tmp_name']);
+          $write = fwrite($stream, $file);
+          fclose($stream);
+
+          debug($write);
 
           $screenshots = array();
           if (!empty($this->request->data('screenshots'))) {
-            $details = array();
-           foreach ($this->request->data('screenshots') as $screenshot) {
-             $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
+              $details = array();
+              $index = 1;
+             foreach ($this->request->data('screenshots') as $screenshot) {
+               $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
 
-             $file = $screenshot;
-             $write = fwrite($stream, $file);
+               $file = $screenshot;
+               $write = fwrite($stream, $file);
 
-             fclose($stream);
+               fclose($stream);
 
-             $stream = fopen("ssh2.sftp://$sftp$remote_file/" . "ss" . $index . '-thumb.png', 'w');
+               debug($write);
 
-             $thumb_file = $screenshot;
-             fwrite($stream, $thumb_file);
-             fclose($stream);
+               $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '-thumb.png', 'w');
 
-             $details[] = array(
-               'type' => 'image',
-               'url' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
-               'thumb' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
+               $thumb_file = $screenshot;
+               fwrite($stream, $thumb_file);
+               fclose($stream);
+
+               debug($write);
+
+               $details[] = array(
+                 'type' => 'image',
+                 'url' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+                 'thumb' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
+               );
+               $index++;
+             }
+           // }
+           exit;
+
+            $game_data = array(
+              'packageName' => $package_name,
+              'title' => $this->request->data('title'),
+              'description' => $this->request->data('description'),
+              'players' => $this->request->data('players'),
+              'genres' => $this->request->data('genres'),
+              'releases' => array(
+                 'name' => $version_name,
+                 'versionCode' => $version_code,
+                 'uuid' => $this->request->session()->read('Auth.User.uuid'),
+                 'date' => '',//gmdate('Y-m-d\TH:i:s\Z', $date->format('U')),
+                 'url' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $package_name . '_' . $version_name . '.apk',
+                 'size' => filesize($this->request->data('apk')['tmp_name']),
+                 'md5sum' => $md5_sum,
+                 'publicSize' => 0,
+                 'nativeSize' => 0,
+               ),
+               'media' => array(
+                 'discover' => $this->request->data('discover'),
+                 'video' => $this->request->data('video'),
+                 'screenshots' => $screenshots,
+                 'details' => $details,
+               ),
+               'developer' => array(
+                 'uuid' => $this->request->data('uuid'),
+                 'name' => $this->request->data('name'),
+                 'supportEmail' => $this->request->data('support_email'),
+                 'supportPhone' => $this->request->data('support_phone'),
+                 'founder' => $this->request->data('founder'),
+               ),
+               'contentRating' => $this->request->data('content_Rating'),
+               'website' => $this->request->data('website'),
+               'firstPublishedAt' => $this->request->data('first_published_at'),
+               'inAppPurchases' => $this->request->data('in_app_purchases'),
+               'overview' => $this->request->data('overview'),
+               'premium' => $this->request->data('premium'),
+               "rating" => array(
+                 "likeCount" => 0,
+                 "average" => 0,
+                 "count" => 0
+               )
              );
+
+             $game->user_id = $this->request->session()->read('Auth.User.id');
+             $game->title = $this->request->data('title');
+             $game->data = json_encode($game_data);
+
+             if ($this->Games->save($game)) {
+                 $this->Flash->success(__('Your game has been saved.'));
+                 return $this->redirect(['action' => 'index']);
+             }
+             $this->Flash->error(__('Unable to add your game.'));
+           } else {
+             $this->Flash->error(__('Unable to upload file.'));
            }
-         // }
-         exit;
-
-          $game_data = array(
-            'packageName' => $package_name,
-            'title' => $this->request->data('title'),
-            'description' => $this->request->data('description'),
-            'players' => $this->request->data('players'),
-            'genres' => $this->request->data('genres'),
-            'releases' => array(
-               'name' => $version_name,
-               'versionCode' => $version_code,
-               'uuid' => $this->request->session()->read('Auth.User.uuid'),
-               'date' => '',//gmdate('Y-m-d\TH:i:s\Z', $date->format('U')),
-               'url' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $package_name . '_' . $version_name . '.apk',
-               'size' => filesize($this->request->data('apk')['tmp_name']),
-               'md5sum' => $md5_sum,
-               'publicSize' => 0,
-               'nativeSize' => 0,
-             ),
-             'media' => array(
-               'discover' => $this->request->data('discover'),
-               'video' => $this->request->data('video'),
-               'screenshots' => $screenshots,
-               'details' => $details,
-             ),
-             'developer' => array(
-               'uuid' => $this->request->data('uuid'),
-               'name' => $this->request->data('name'),
-               'supportEmail' => $this->request->data('support_email'),
-               'supportPhone' => $this->request->data('support_phone'),
-               'founder' => $this->request->data('founder'),
-             ),
-             'contentRating' => $this->request->data('content_Rating'),
-             'website' => $this->request->data('website'),
-             'firstPublishedAt' => $this->request->data('first_published_at'),
-             'inAppPurchases' => $this->request->data('in_app_purchases'),
-             'overview' => $this->request->data('overview'),
-             'premium' => $this->request->data('premium'),
-             "rating" => array(
-               "likeCount" => 0,
-               "average" => 0,
-               "count" => 0
-             )
-           );
-
-           $game->user_id = $this->request->session()->read('Auth.User.id');
-           $game->title = $this->request->data('title');
-           $game->data = json_encode($game_data);
-
-           if ($this->Games->save($game)) {
-               $this->Flash->success(__('Your game has been saved.'));
-               return $this->redirect(['action' => 'index']);
-           }
-           $this->Flash->error(__('Unable to add your game.'));
-         } else {
-           $this->Flash->error(__('Unable to upload file.'));
          }
-       }
-       $this->set('game', $game);
+      }
+      $this->set('game', $game);
     }
 
     public function edit($id)
