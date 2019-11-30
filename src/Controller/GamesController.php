@@ -6,6 +6,7 @@ namespace App\Controller;
 use Cake\Network\Http\Client;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Validation\Validator;
 
 class GamesController extends AppController
 {
@@ -58,6 +59,33 @@ class GamesController extends AppController
        $game = $this->Games->newEntity();
 
        if ($this->request->is('post')) {
+
+          $validator = new Validator();
+          $validator
+              ->add('apk', 'file', [
+                  'rule' => ['uploadedFile', ['types' => ['apk']]],
+                  'message' => 'File is not an APK'
+              ])
+              ->add('discover', 'file', [
+                  'rule' => ['uploadedFile', ['types' => ['png']]],
+                  'message' => 'Please only upload PNGs'
+              ])
+              ->add('screenshot', 'file', [
+                  'rule' => ['uploadedFile', ['types' => ['png']]],
+                  'message' => 'Please only upload PNGs'
+              ])
+              ->add('video', 'file', [
+                  'rule' => ['uploadedFile', ['types' => ['mp4']]],
+                  'message' => 'Please only upload MP4s'
+              ]);
+
+          $errors = $validator->errors($this->request->data());
+          debug($errors);
+          if (!empty($errors)) {
+              $this->Flash->error(__('Please fix the errors below.'));
+              return $this->redirect(['controller' => 'games', 'action' => 'add']);
+          }
+
           $apk = new \ApkParser\Parser($this->request->data('apk')['tmp_name']);
 
           $manifest = $apk->getManifest();
@@ -78,53 +106,52 @@ class GamesController extends AppController
           $dev_uuid = '635c4cf6-6245-4100-a1a9-121759ad0323';
           $remote_file = '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/';
 
+          ini_set('default_socket_timeout', 2);
+
+          $context = stream_context_create(
+            array(
+              'http' => array(
+                'header'=>'Connection: close\r\n',
+                'timeout' => .5
+              )
+            )
+          );
+
           $connection = ssh2_connect($host, 22);
           ssh2_auth_password($connection, $username, $password);
 
           $sftp = ssh2_sftp($connection);
 
-          debug($sftp);
-
           if ($sftp != false) {
+            debug($this->request->data);
 
           $result = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid);
           $result2 = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name);
 
           $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '_' . $version_name . '.apk', 'w');
-          $file = file_get_contents($this->request->data('apk')['tmp_name']);
+          $file = htmlspecialchars(file_get_contents($this->request->data('apk')['tmp_name'],false,$context));
           $write = fwrite($stream, $file);
           fclose($stream);
-
-          debug($write);
 
           $stream = fopen("ssh2.sftp://$sftp$remote_file" . 'discover.png', 'w');
-          $file = file_get_contents($this->request->data('apk')['tmp_name']);
+          $file = file_get_contents($this->request->data('discover')['tmp_name']);
           $write = fwrite($stream, $file);
           fclose($stream);
 
-          debug($write);
-
           $screenshots = array();
-          if (!empty($this->request->data('screenshots'))) {
+          if (!empty($this->request->data('screenshot'))) {
               $details = array();
               $index = 1;
-             foreach ($this->request->data('screenshots') as $screenshot) {
+             foreach ($this->request->data('screenshot') as $screenshot) {
                $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
-
-               $file = $screenshot;
+               $file = file_get_contents($screenshot['tmp_name']);
                $write = fwrite($stream, $file);
-
                fclose($stream);
-
-               debug($write);
 
                $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '-thumb.png', 'w');
-
-               $thumb_file = $screenshot;
+               $thumb_file = file_get_contents($screenshot['tmp_name']);
                fwrite($stream, $thumb_file);
                fclose($stream);
-
-               debug($write);
 
                $details[] = array(
                  'type' => 'image',
@@ -134,7 +161,6 @@ class GamesController extends AppController
                $index++;
              }
            // }
-           exit;
 
             $game_data = array(
               'packageName' => $package_name,
@@ -146,7 +172,7 @@ class GamesController extends AppController
                  'name' => $version_name,
                  'versionCode' => $version_code,
                  'uuid' => $this->request->session()->read('Auth.User.uuid'),
-                 'date' => '',//gmdate('Y-m-d\TH:i:s\Z', $date->format('U')),
+                 'date' => date("Y-m-d")."T".date("H:i:s")."Z",
                  'url' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $package_name . '_' . $version_name . '.apk',
                  'size' => filesize($this->request->data('apk')['tmp_name']),
                  'md5sum' => $md5_sum,
@@ -154,24 +180,24 @@ class GamesController extends AppController
                  'nativeSize' => 0,
                ),
                'media' => array(
-                 'discover' => $this->request->data('discover'),
+                 'discover' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $remote_file . 'discover.png',
                  'video' => $this->request->data('video'),
                  'screenshots' => $screenshots,
                  'details' => $details,
                ),
                'developer' => array(
-                 'uuid' => $this->request->data('uuid'),
-                 'name' => $this->request->data('name'),
-                 'supportEmail' => $this->request->data('support_email'),
-                 'supportPhone' => $this->request->data('support_phone'),
-                 'founder' => $this->request->data('founder'),
+                 'uuid' => $this->request->session()->read('Auth.User.uuid'),
+                 'name' => $this->request->session()->read('Auth.User.username'),
+                 'supportEmail' => $this->request->session()->read('Auth.User.email'),
+                 'supportPhone' => false,
+                 'founder' => false,
                ),
-               'contentRating' => $this->request->data('content_Rating'),
-               'website' => $this->request->data('website'),
-               'firstPublishedAt' => $this->request->data('first_published_at'),
-               'inAppPurchases' => $this->request->data('in_app_purchases'),
-               'overview' => $this->request->data('overview'),
-               'premium' => $this->request->data('premium'),
+               'contentRating' => $this->request->data('content_rating'), //
+               'website' => $this->request->data('website'), //
+               'firstPublishedAt' => date("Y-m-d")."T".date("H:i:s")."Z",
+               'inAppPurchases' => false,
+               'overview' => "Released in October 2013 by Alex Tritt Games.", //
+               'premium' => false,
                "rating" => array(
                  "likeCount" => 0,
                  "average" => 0,
