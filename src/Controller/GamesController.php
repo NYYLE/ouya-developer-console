@@ -58,30 +58,64 @@ class GamesController extends AppController
     {
        $game = $this->Games->newEntity();
 
+       $this->loadModel('Genres');
+       $genres = $this->Genres->find('all');
+       $this->set(compact('genres'));
+
+        $session = $this->getRequest()->getSession();
+        $this->set('session', $session);
+
        if ($this->request->is('post')) {
+            $display = array(
+               'title' => $this->request->data('title'),
+               'description' => $this->request->data('description'),
+               'players' => $this->request->data('players'),
+               'genre' => $this->request->data('genre[]'),
+               'content_rating' => $this->request->data('content_rating'),
+               'discover' => $this->request->data('discover'),
+               'video' => $this->request->data('discover'),
+               'screenshot' => $this->request->data('screenshot[]'),
+               'apk' => $this->request->data('apk'),
+               'website' => $this->request->data('website')
+           );
+
+           $session->write('Session_display', $display);
 
           $validator = new Validator();
           $validator
-              ->add('apk', 'file', [
-                  'rule' => ['uploadedFile', ['types' => ['apk']]],
-                  'message' => 'File is not an APK'
+              ->notEmpty('title', 'Please add a title')
+              ->notEmpty('discover', 'Please add a description')
+              ->notEmpty('players', 'Please select number of players')
+              ->add('apk', [
+                'validExtension' => [
+                    'rule' => ['extension',['apk']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'message' => __('Please only upload APKs')
+                ]
               ])
-              ->add('discover', 'file', [
-                  'rule' => ['uploadedFile', ['types' => ['png']]],
-                  'message' => 'Please only upload PNGs'
+              ->add('discover', [
+                'validExtension' => [
+                    'rule' => ['extension',['png']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'message' => __('Please only upload PNGs')
+                ]
               ])
-              ->add('screenshot', 'file', [
-                  'rule' => ['uploadedFile', ['types' => ['png']]],
-                  'message' => 'Please only upload PNGs'
+              ->add('screenshot[]', [
+                'validExtension' => [
+                    'rule' => ['extension',['png']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'message' => __('Please only upload PNGs')
+                ]
               ])
-              ->add('video', 'file', [
-                  'rule' => ['uploadedFile', ['types' => ['mp4']]],
-                  'message' => 'Please only upload MP4s'
-              ]);
+              ->add('video', [
+                'validExtension' => [
+                    'rule' => ['extension',['mp4']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'message' => __('Please only upload MP4s')
+                ]
+              ])
+              ->allowEmptyFile('video')
+              ->notEmpty('genre[]', 'Please enter at least one genre');
 
           $errors = $validator->errors($this->request->data());
-          debug($errors);
           if (!empty($errors)) {
+              $session->write('Session_errors', $errors);
               $this->Flash->error(__('Please fix the errors below.'));
               return $this->redirect(['controller' => 'games', 'action' => 'add']);
           }
@@ -99,6 +133,10 @@ class GamesController extends AppController
           $target_sdk_level = $manifest->getTargetSdkLevel();
           $target_sdk_platform = $manifest->getTargetSdk()->platform;
           $md5_sum = md5_file($this->request->data('apk')['tmp_name']);
+
+          if ($package_name == null || $version_name == null || $version_code == null || $min_sdk_level == null || $min_sdk_platform == null) {
+          
+          }
 
           $host = 'statics.ouya.world';
           $username = 'dh_q4dnv3';
@@ -123,7 +161,6 @@ class GamesController extends AppController
           $sftp = ssh2_sftp($connection);
 
           if ($sftp != false) {
-            debug($this->request->data);
 
           $result = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid);
           $result2 = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name);
@@ -143,31 +180,44 @@ class GamesController extends AppController
               $details = array();
               $index = 1;
              foreach ($this->request->data('screenshot') as $screenshot) {
-               $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
-               $file = file_get_contents($screenshot['tmp_name']);
-               $write = fwrite($stream, $file);
-               fclose($stream);
+               if (screenshot['error'] == 0) {
+                   $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
+                   $file = file_get_contents($screenshot['tmp_name']);
+                   $write = fwrite($stream, $file);
+                   fclose($stream);
 
-               $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '-thumb.png', 'w');
-               $thumb_file = file_get_contents($screenshot['tmp_name']);
-               fwrite($stream, $thumb_file);
-               fclose($stream);
+                   $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '-thumb.png', 'w');
+                   $thumb_file = file_get_contents($screenshot['tmp_name']);
+                   fwrite($stream, $thumb_file);
+                   fclose($stream);
 
-               $details[] = array(
-                 'type' => 'image',
-                 'url' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
-                 'thumb' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
-               );
-               $index++;
+                   $details[] = array(
+                     'type' => 'image',
+                     'url' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+                     'thumb' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
+                   );
+                   $index++;
+                }
              }
-           // }
+
+           if (!empty($this->request->data('video')) && $this->request->data('video')['error'] == 0) {
+             $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
+             $file = file_get_contents($screenshot['tmp_name']);
+             $write = fwrite($stream, $file);
+             fclose($stream);
+
+             $details[] = array(
+               'type' => 'video',
+               'url' => 'statics.ouya.world/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+             );
+           }
 
             $game_data = array(
               'packageName' => $package_name,
               'title' => $this->request->data('title'),
               'description' => $this->request->data('description'),
               'players' => $this->request->data('players'),
-              'genres' => $this->request->data('genres'),
+              'genres' => $this->request->data('genre'),
               'releases' => array(
                  'name' => $version_name,
                  'versionCode' => $version_code,
@@ -179,12 +229,8 @@ class GamesController extends AppController
                  'publicSize' => 0,
                  'nativeSize' => 0,
                ),
-               'media' => array(
-                 'discover' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $remote_file . 'discover.png',
-                 'video' => $this->request->data('video'),
-                 'screenshots' => $screenshots,
-                 'details' => $details,
-               ),
+               'media' => $details,
+               'discover' => 'statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $remote_file . 'discover.png',
                'developer' => array(
                  'uuid' => $this->request->session()->read('Auth.User.uuid'),
                  'name' => $this->request->session()->read('Auth.User.username'),
@@ -192,11 +238,11 @@ class GamesController extends AppController
                  'supportPhone' => false,
                  'founder' => false,
                ),
-               'contentRating' => $this->request->data('content_rating'), //
-               'website' => $this->request->data('website'), //
+               'contentRating' => $this->request->data('content_rating'),
+               'website' => $this->request->data('website'),
                'firstPublishedAt' => date("Y-m-d")."T".date("H:i:s")."Z",
                'inAppPurchases' => false,
-               'overview' => "Released in October 2013 by Alex Tritt Games.", //
+               'overview' => "Released in " . date('F Y') . " by " . $this->request->session()->read('Auth.User.username') .  ".",
                'premium' => false,
                "rating" => array(
                  "likeCount" => 0,

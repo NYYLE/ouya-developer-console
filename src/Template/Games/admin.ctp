@@ -96,7 +96,7 @@ span.ratingCount {
 <?php
 $i = 0;
 foreach ($games as $game) {
-  //debug($game);
+  debug($game);
   if ($i % 2) {
     $style = "background-color: #f5f5f5;";
   } else {
@@ -105,7 +105,7 @@ foreach ($games as $game) {
   ?>
 <li style="<?php echo $style ?>">
   <a href="../games/view/<?php echo $game['game_data']['packageName']; ?>">
-    <img class="posterImage" src="<?php echo $game['game_data']['media']['discover'] ?>" data-original="<?php echo $game['game_data']['media']['discover'] ?>" width="235" height="132" alt="<?php echo $game['game_data']['title'] ?>" style="display: block;">
+    <img class="posterImage" src="<?php echo $game['game_data']['discover'] ?>" data-original="<?php echo $game['game_data']['discover'] ?>" width="235" height="132" alt="<?php echo $game['game_data']['title'] ?>" style="display: block;">
     <noscript><img class="posterImage" src="<?php echo $game['game_data']['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
     <div class="gamelistDetails">
       <h3 class="gamelistTitle"><?php echo $game['game_data']['title'] ?></h3>

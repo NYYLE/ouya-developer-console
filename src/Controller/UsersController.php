@@ -6,6 +6,9 @@ namespace App\Controller;
 use Cake\Network\Http\Client;#
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Mailer\Email;
+use Cake\Utility\Security;
+use Cake\Mailer\TransportFactory;
 
 class UsersController extends AppController {
 
@@ -48,25 +51,54 @@ class UsersController extends AppController {
          $user = $this->Users->newEntity();
          if ($this->request->is('post')) {
              // Prior to 3.4.0 $this->request->data() was used.
-             $user = $this->Users->find('all', array(
+
+             $users = $this->Users->find('all', array(
                'conditions' => array(
-                 'username' => $this->request->data('username'),
+                 'OR' => array(
+                   array('username' => $this->request->data('username')),
+                   array('email' => $this->request->data('email')),
+                 )
                ),
              ));
 
-             if (empty($user)) {
+             if (empty($users[0]['username'])) {
                $user = $this->Users->patchEntity($user, $this->request->getData());
-               $user->devUUID = com_create_guid(); 
+               $user->devUUID = com_create_guid();
+               $user->status = 1;
+               $user->email = $this->request->data('email');
+
+               $my_token = Security::hash(Security::randomBytes(32));
+               $user->token = $my_token;
+
                if ($this->Users->save($user)) {
-                   $this->Flash->success(__('The user has been saved.'));
+                   $this->Flash->success(__('Registration successful. Your confirmation email has been sent'));
+
+                   $email = new Email('default');
+
+                  $email->from(['dev.ouya.world@gmail.com' => 'DEV.OUYA.WORLD'])
+                      ->to($this->request->data('email'))
+                      ->subject('Email Confirmation')
+                      ->send('My message');
                    return $this->redirect(['action' => 'login']);
                }
                $this->Flash->error(__('Unable to add the user.'));
              } else {
-                $this->Flash->error(__('Username is already taken.'));
+                $this->Flash->error(__('Username or email is already taken.'));
              }
          }
          $this->set('user', $user);
+     }
+
+     public function verification($token)
+     {
+         $user = $this->Users->find('first', array(
+           'conditions' => array(
+             'token' => $token
+           )
+         ));
+         $this->Users->id = $user['User']['id'];
+         $user->status = 0;
+         $this->Users->save($user);
      }
 
      public function beforeFilter(Event $event)
