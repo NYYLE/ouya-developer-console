@@ -60,7 +60,7 @@
   <div class="col-sm-7">
     <div class="w3-content w3-display-container">
       <?php
-      foreach ($game['media']['screenshots'] as $screenshot) {
+      foreach ($game['media'] as $screenshot) {
         ?>
             <img class="mySlides w3-animate-opacity" src="<?php echo $screenshot; ?>" style="border-width: 10px;">
             <?php
@@ -72,7 +72,7 @@
 
         <?php
         $i = 1;
-        foreach ($game['media']['screenshots'] as $screenshot) {
+        foreach ($game['media'] as $screenshot) {
           ?>
           <span class="w3-badge demo w3-border" onclick="currentDiv(<?php echo $i; ?>)"></span>
           <?php

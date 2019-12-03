@@ -54,7 +54,7 @@ class GamesController extends AppController
     {
         $http = new Client();
 
-        $response = $http->get('http://ouya.dcrich.net:35791/api/v1/gamedata/' . $package_name);
+        $response = $http->get('https://dev.dcrich.net/api/v1/gamedata/' . $package_name);
         $game = $response->getJson();
 
         $this->set(compact('game'));
@@ -250,7 +250,7 @@ class GamesController extends AppController
                'contentRating' => $this->request->data('content_rating'),
                'website' => $this->request->data('website'),
                'firstPublishedAt' => date("Y-m-d")."T".date("H:i:s")."Z",
-               
+
                'overview' => "Released in " . date('F Y') . " by " . $this->request->session()->read('Auth.User.username') .  ".",
 
                "rating" => array(
