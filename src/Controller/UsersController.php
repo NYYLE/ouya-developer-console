@@ -3,14 +3,16 @@
 
 namespace App\Controller;
 
-use Cake\Network\Http\Client;#
+use Cake\Network\Http\Client;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Mailer\MailerAwareTrait;
 use Cake\Mailer\Email;
 use Cake\Utility\Security;
-use Cake\Mailer\TransportFactory;
 
 class UsersController extends AppController {
+
+    use MailerAwareTrait;
 
      public function games()
      {
@@ -61,9 +63,9 @@ class UsersController extends AppController {
                ),
              ));
 
-             if (empty($users[0]['username'])) {
+             if (empty($users->username)) {
                $user = $this->Users->patchEntity($user, $this->request->getData());
-               $user->devUUID = com_create_guid();
+               $user->devUUID = $this->getGUID();
                $user->status = 1;
                $user->email = $this->request->data('email');
 
@@ -74,11 +76,13 @@ class UsersController extends AppController {
                    $this->Flash->success(__('Registration successful. Your confirmation email has been sent'));
 
                    $email = new Email('default');
+                   $email->from(['ouya.world.dev@gmail.com' => 'OUYA World Dev Portal'])      // sender email
+                  ->to($this->request->data('email')) // receiver email
+                  ->subject('OUYA Developer Portal')   // message subject
+                  ->replyTo('ouya.world.dev@gmail.com'); // email to reply to
 
-                  $email->from(['dev.ouya.world@gmail.com' => 'DEV.OUYA.WORLD'])
-                      ->to($this->request->data('email'))
-                      ->subject('Email Confirmation')
-                      ->send('My message');
+                  $this->getMailer('User')->send('registered', [$user]);
+
                    return $this->redirect(['action' => 'login']);
                }
                $this->Flash->error(__('Unable to add the user.'));
@@ -91,14 +95,22 @@ class UsersController extends AppController {
 
      public function verification($token)
      {
+        $this->autoRender = false;
+
          $user = $this->Users->find('first', array(
            'conditions' => array(
-             'token' => $token
+             'token' => $token,
+             'status' => 1
            )
          ));
          $this->Users->id = $user['User']['id'];
          $user->status = 0;
          $this->Users->save($user);
+
+         $this->Flash->success(__('Verification successful. You can now login'));
+
+         return $this->redirect(['action' => 'login']);
+
      }
 
      public function beforeFilter(Event $event)
@@ -115,9 +127,14 @@ class UsersController extends AppController {
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
             if ($user) {
-                $this->Auth->setUser($user);
-                Configure::write('User.username', $this->request->data['username']);
-                return $this->redirect($this->Auth->redirectUrl());
+                if ($user['status'] == 1) {
+                  $this->Flash->error(__('Please verify your email before logging in.'));
+                  return $this->redirect(['action' => 'login']);
+                } else {
+                  $this->Auth->setUser($user);
+                  Configure::write('User.username', $this->request->data['username']);
+                  return $this->redirect($this->Auth->redirectUrl());
+                }
             }
             $this->Flash->error(__('Invalid username or password, try again'));
         }

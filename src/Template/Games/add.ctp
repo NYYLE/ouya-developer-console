@@ -71,7 +71,7 @@ Please fill in the form below with all the relavant details to your game. Make s
       echo "<label class='error-label'>" . $errors['apk']['validExtension'] . "</label>";
     }
 
-    echo $this->Form->control('website', array('type' => 'number', 'required' => false, 'value' => $display['website']));
+    echo $this->Form->control('website', array('required' => false, 'value' => $display['website']));
     if (!empty($errors['website'])) {
       echo "<label class='error-label'>" . $errors['website'][0] . "</label>";
     }
