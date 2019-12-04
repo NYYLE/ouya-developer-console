@@ -3,7 +3,7 @@
 <h1>Add Game</h1>
 
 <p>
-Please fill in the form below with all the relavant details to your game. Make sure your APK has a valid package name,
+Please fill in the form below with all the relavant details to your game. Make sure your APK has a valid package name, versionName and versionCode.
 </p>
 <?php
 
@@ -46,7 +46,21 @@ Please fill in the form below with all the relavant details to your game. Make s
       echo "<label class='error-label'>" . $errors['genre'][0] . "</label>";
     }
 
-    echo $this->Form->control('content_rating', array('type' => 'text', 'required' => true, 'value' => $display['content_rating'])); // Use select 2
+    ?>
+    <label for="id_label" class="genre-input-label required" style="color: #4d4d4d; font-weight: bold;">
+      Genres<span style="color: #C3232D;"> * </span>
+
+      <select class="genre-input" id="id_label" name="genre[]" multiple="multiple" required value=<?php echo $display['genre'] ?>, error=<?php echo $errors['genre'] ?>>
+        <?php
+        foreach ($genres as $genre) {
+        ?>
+        <option value="<?php echo $genre['name'] ?>"><?php echo $genre['name'] ?></option>
+        <?php
+        }
+        ?>
+      </select>
+    </label>
+    <?php
     if (!empty($errors['genre'])) {
       echo "<label class='error-label'>" . $errors['genre'][0] . "</label>";
     }

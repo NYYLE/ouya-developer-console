@@ -285,16 +285,61 @@ class GamesController extends AppController
       $this->set('game', $game);
     }
 
-    public function edit($id)
+    public function edit($package_name)
     {
-        $game = $this->Games->get($id);
-        if ($this->request->is(['post', 'put'])) {
-            $this->Games->patchEntity($game, $this->request->getData());
-            if ($this->Games->save($game)) {
-                $this->Flash->success(__('Your game has been updated.'));
-                return $this->redirect(['action' => 'view', $id]);
+        $http = new Client();
+
+        $this->loadModel('Genres');
+        $genres = $this->Genres->find('all');
+        $this->set(compact('genres'));
+
+         $session = $this->getRequest()->getSession();
+         $this->set('session', $session);
+
+         $package_name = 'COM.TEST.ODC';
+
+        $response = $http->get('https://dev.dcrich.net/api/v1/gamedata/' . $package_name);
+        $game = $response->getJson();
+
+        if ($this->request->is('post')) {
+          $display = array(
+             'title' => $this->request->data('title'),
+             'description' => $this->request->data('description'),
+             'players' => $this->request->data('players'),
+             'genre' => $this->request->data('genre[]'),
+             'content_rating' => $this->request->data('content_rating'),
+             'discover' => $this->request->data('discover'),
+             'video' => $this->request->data('discover'),
+             'screenshot' => $this->request->data('screenshot[]'),
+             'apk' => $this->request->data('apk'),
+             'website' => $this->request->data('website')
+         );
+
+         $session->write('Session_display', $display);
+
+          $changes = array();
+          foreach ($this->request->data() as $field => $change) {
+            switch ($field) {
+              case 'screenshot[]':
+                $changes[$field] = $change;
+                break;
+              case 'apk':
+                $changes[$field] = $change;
+                break;
+              case 'discover':
+                $changes[$field] = $change;
+                break;
+              default:
+                $changes[$field] = $change;
+                break;
             }
-            $this->Flash->error(__('Unable to update your game.'));
+
+          }
+
+          $response = $http->patch('https://dev.dcrich.net/api/v1/gamedata/' . $package_name, [
+           'title' => 'test',
+           'body' => json_encode($changes)
+          ]);
         }
 
         $this->set('game', $game);

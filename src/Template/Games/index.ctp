@@ -102,7 +102,7 @@ foreach ($games as $game) {
   }
   ?>
 <li style="<?php echo $style ?>">
-  <a href="../games/view/<?php echo $game['packageName'] ?>">
+  <a href="games/view/<?php echo $game['packageName'] ?>">
     <img class="posterImage" src="<?php echo $game['discover'] ?>" data-original="<?php echo $game['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
     <noscript><img class="posterImage" src="<?php echo $game['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
     <div class="gamelistDetails">
@@ -112,7 +112,7 @@ foreach ($games as $game) {
       <h4 class="gamelistRelease">Released: August 2013</h4>
       <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
       <div class="gameTaglist">
-        
+
       <div class="clearfix">
       </div>
     </div>

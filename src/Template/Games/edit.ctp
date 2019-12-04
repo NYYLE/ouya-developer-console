@@ -1,23 +1,89 @@
 <!-- File: src/Template/Games/edit.ctp -->
 
 <h1>Edit Game</h1>
+
+<p>
+Please fill in the form below with ONLY the changes to your game. If you would like a value to stay the same please leave it blank. Make sure your APK has a valid package name, versionName and versionCode.
+</p>
 <?php
-echo $this->Form->create($game, array('type' => 'file'));
-// Hard code the user for now.
 
-echo $this->Form->control('title', array('type' => 'text', 'required' => true));
-echo $this->Form->control('description', array('type' => 'text', 'rows' => 5, 'required' => true));
-echo $this->Form->control('players', array('type' => 'number', 'required' => true));
+    $errors = $session->read('Session_errors');
+    $display = $session->read('Session_display');
 
-echo $this->Form->control('genres', array('type' => 'text', 'required' => true)); // Use select 2
+    echo $this->Form->create(false, array('type' => 'file'));
 
-// media
-echo $this->Form->control('discover', array('type' => 'text', 'required' => true));
-echo $this->Form->control('video', array('type' => 'text', 'required' => false));
-echo $this->Form->control('screenshots', array('type' => 'text', 'required' => true));
-echo $this->Form->file('apk');
+    echo $this->Form->control('title', array('type' => 'text', 'required' => false, 'value' => $display['title']));
+    if (!empty($errors['title'])) {
+      echo "<label>" . $errors['title'][0] . "</label>";
+    }
 
-//  echo $this->Form->control('data', [));
-echo $this->Form->submit('Save Game');
-echo $this->Form->end();
+    echo $this->Form->control('description', array('type' => 'text', 'rows' => 5, 'required' => false, 'value' => $display['description']));
+    if (!empty($errors['description'])) {
+      echo "<label>" . $errors['description'][0] . "</label>";
+    }
+
+    echo $this->Form->control('players', array('type' => 'number', 'required' => false, 'value' => $display['players']));
+    if (!empty($errors['players'])) {
+      echo "<label>" . $errors['players'][0] . "</label>";
+    }
+
+    ?>
+    <label for="id_label" class="genre-input-label required" style="color: #4d4d4d; font-weight: bold;">
+      Genres<span style="color: #C3232D;"> * </span>
+
+      <select class="genre-input" id="id_label" name="genre[]" multiple="multiple" required value=<?php echo $display['genre'] ?>, error=<?php echo $errors['genre'] ?>>
+        <?php
+        foreach ($genres as $genre) {
+        ?>
+        <option value="<?php echo $genre['name'] ?>"><?php echo $genre['name'] ?></option>
+        <?php
+        }
+        ?>
+      </select>
+    </label>
+    <?php
+    if (!empty($errors['genre'])) {
+      echo "<label class='error-label'>" . $errors['genre'][0] . "</label>";
+    }
+
+    echo $this->Form->control('content_rating', array('type' => 'text', 'required' => false, 'value' => $display['content_rating'])); // Use select 2
+    if (!empty($errors['genre'])) {
+      echo "<label class='error-label'>" . $errors['genre'][0] . "</label>";
+    }
+    // media
+    echo $this->Form->control('discover', array('label' => 'Discover Image', 'type' => 'file', 'required' => false, 'value' => $display['discover']));
+    if (!empty($errors['discover'])) {
+      echo "<label class='error-label'>" . $errors['discover']['validExtension'] . "</label>";
+    }
+
+    echo $this->Form->control('video', array('label' => 'Video', 'type' => 'file', 'required' => false, 'value' => $display['video']));
+    if (!empty($errors['video'])) {
+      echo "<label class='error-label'>" . $errors['video']['validExtension'] . "</label>";
+    }
+
+    echo $this->Form->control('screenshot[]', array('label' => 'Screenshots', 'type' => 'file', 'multiple' => 'multiple', 'required' => false, 'value' => $display['screenshot']));
+    if (!empty($errors['screenshot'])) {
+      echo "<label class='error-label'>" . $errors['screenshot']['validExtension'] . "</label>";
+    }
+
+    echo $this->Form->control('apk', array('label' => 'APK File', 'type' => 'file', 'required' => false, 'value' => $display['apk']));
+    if (!empty($errors['apk'])) {
+      echo "<label class='error-label'>" . $errors['apk']['validExtension'] . "</label>";
+    }
+
+    echo $this->Form->control('website', array('required' => false, 'value' => $display['website']));
+    if (!empty($errors['website'])) {
+      echo "<label class='error-label'>" . $errors['website'][0] . "</label>";
+    }
+
+    echo $this->Form->button('Add Game', array('class' => 'btn btn-success', 'type' => 'submit'));
+    echo $this->Form->end();
 ?>
+
+<script>
+
+$(document).ready(function() {
+    $('.genre-input').select2();
+});
+
+</script>

@@ -42,12 +42,14 @@
   <h1 class="col-sm-12" style="padding-bottom: 50px; color: #fc4422; font-size: 55px;"><b><?= mb_strtoupper($game['title']); ?></b></h1>
 
   <?php
-  if (isset($game['video'])) {
+  //debug($game);
+  if (isset($game['media']['video'])) {
     ?>
     <div class="videowrapper">
         <iframe class="col-sm-12" style="padding-bottom: 50px;" width="420" height="315" src="<?php echo $game['video']; ?>" frameborder="0" allowfullscreen></iframe>
     </div>
     <?php
+    unset($game['media']['video']);
   }
   ?>
 
@@ -62,7 +64,7 @@
       <?php
       foreach ($game['media'] as $screenshot) {
         ?>
-            <img class="mySlides w3-animate-opacity" src="<?php echo $screenshot; ?>" style="border-width: 10px;">
+            <img class="mySlides w3-animate-opacity" src="<?php echo $screenshot['url']; ?>" style="border-width: 10px;">
             <?php
       }
       ?>
