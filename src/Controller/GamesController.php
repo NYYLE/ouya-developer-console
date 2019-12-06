@@ -144,7 +144,8 @@ class GamesController extends AppController
           $md5_sum = md5_file($this->request->data('apk')['tmp_name']);
 
           if ($package_name == null || $version_name == null || $version_code == null || $min_sdk_level == null || $min_sdk_platform == null) {
-
+            $this->Flash->success(__('Please make sure APK has valid attributes'));
+            return $this->redirect(['action' => 'add']);
           }
 
           $host = 'statics.ouya.world';
@@ -321,6 +322,26 @@ class GamesController extends AppController
           foreach ($this->request->data() as $field => $change) {
             switch ($field) {
               case 'screenshot[]':
+                $index = 1;
+                foreach ($change as $screenshot) {
+                  $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
+                  $file = file_get_contents($screenshot['tmp_name']);
+                  $write = fwrite($stream, $file);
+                  fclose($stream);
+
+                  $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '-thumb.png', 'w');
+                  $thumb_file = file_get_contents($screenshot['tmp_name']);
+                  fwrite($stream, $thumb_file);
+                  fclose($stream);
+
+                  $details[] = array(
+                    'type' => 'image',
+                    'url' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+                    'thumb' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
+                  );
+
+                  $index++;
+                }
                 $changes[$field] = $change;
                 break;
               case 'apk':

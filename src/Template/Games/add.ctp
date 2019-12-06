@@ -1,12 +1,19 @@
 <!-- File: src/Template/Games/add.ctp -->
 
+<style>
+#content_rating_id::after {
+  content: " *";
+  color: #C3232D;
+}
+</style>
+
 <h1>Add Game</h1>
 
 <p>
 Please fill in the form below with all the relavant details to your game. Make sure your APK has a valid package name, versionName and versionCode.
 </p>
 <?php
-
+  
     $errors = $session->read('Session_errors');
     $display = $session->read('Session_display');
 
@@ -27,23 +34,10 @@ Please fill in the form below with all the relavant details to your game. Make s
       echo "<label>" . $errors['players'][0] . "</label>";
     }
 
-    ?>
-    <label for="id_label" class="genre-input-label required" style="color: #4d4d4d; font-weight: bold;">
-      Genres<span style="color: #C3232D;"> * </span>
-
-      <select class="genre-input" id="id_label" name="genre[]" multiple="multiple" required value=<?php echo $display['genre'] ?>, error=<?php echo $errors['genre'] ?>>
-        <?php
-        foreach ($genres as $genre) {
-        ?>
-        <option value="<?php echo $genre['name'] ?>"><?php echo $genre['name'] ?></option>
-        <?php
-        }
-        ?>
-      </select>
-    </label>
-    <?php
-    if (!empty($errors['genre'])) {
-      echo "<label class='error-label'>" . $errors['genre'][0] . "</label>";
+    echo $this->Form->label('content_rating', 'Content Rating', array('style' => 'font-weight: bold', 'id' => 'content_rating_id'));
+    echo $this->Form->select('content_rating', array('Everybody', '9+', '12+', '17+'), array('required' => true));
+    if (!empty($errors['players'])) {
+      echo "<label>" . $errors['content_rating'][0] . "</label>";
     }
 
     ?>
