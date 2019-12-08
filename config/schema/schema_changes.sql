@@ -1,3 +1,21 @@
+/* USERS TABLE */
+
+CREATE TABLE `users` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`email` VARCHAR(255) NOT NULL,
+	`username` VARCHAR(255) NOT NULL,
+	`password` VARCHAR(255) NOT NULL,
+	`created` DATETIME NULL DEFAULT NULL,
+	`modified` DATETIME NULL DEFAULT NULL,
+	`admin` INT(11) NULL DEFAULT '0',
+	`status` INT(11) NULL DEFAULT '1',
+	`token` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=2;
+
 /* GAMES TABLE */
 
 CREATE TABLE `games` (
@@ -16,16 +34,11 @@ COLLATE='utf8mb4_general_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=2;
 
-/* USERS TABLE */
+/* GENRES TABLE */
 
-CREATE TABLE `users` (
+CREATE TABLE `genres` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`email` VARCHAR(255) NOT NULL,
-	`username` VARCHAR(255) NOT NULL,
-	`password` VARCHAR(255) NOT NULL,
-	`created` DATETIME NULL DEFAULT NULL,
-	`modified` DATETIME NULL DEFAULT NULL,
-	`admin` INT(11) NULL DEFAULT '0',
+	`name` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`id`)
 )
 COLLATE='latin1_swedish_ci'
