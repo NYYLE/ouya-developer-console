@@ -75,14 +75,15 @@ class UsersController extends AppController {
                if ($this->Users->save($user)) {
                    $this->Flash->success(__('Registration successful. Your confirmation email has been sent'));
 
-                   $email = new Email('default');
+                   $email = new Email();
                    $email->from(['ouya.world.dev@gmail.com' => 'OUYA World Dev Portal'])      // sender email
+                  ->template('registered', 'default') // set the template to welcome message
                   ->to($this->request->data('email')) // receiver email
+                  ->setViewVars(['username' => $this->request->data('username')])
                   ->subject('OUYA Developer Portal')   // message subject
-                  ->replyTo('ouya.world.dev@gmail.com'); // email to reply to
-
-                  $this->getMailer('User')->send('registered', [$user]);
-
+                  ->replyTo('ouya.world.dev@gmail.com') // email to reply to
+                  ->from('ouya.world.dev@gmail.com') // who the email is from
+                  ->send();
                    return $this->redirect(['action' => 'login']);
                }
                $this->Flash->error(__('Unable to add the user.'));
