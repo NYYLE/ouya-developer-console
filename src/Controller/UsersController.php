@@ -109,8 +109,8 @@ class UsersController extends AppController {
          ));
 
          $this->Users->id = $user->first()['Users']['id'];
-         $user->status = 0;
-         $this->Users->save($user);
+         $user_data->status = 0;
+         $this->Users->save($user_data);
 
          $this->Flash->success(__('Verification successful. You can now login'));
 
