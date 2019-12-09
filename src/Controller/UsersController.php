@@ -66,7 +66,10 @@ class UsersController extends AppController {
              if ($users->first() == null) {
                $guid = $this->getGUID();
 
-               $user = $this->Users->patchEntity($user, $this->request->getData());
+               $user = $this->Users->newEntity();
+               $user->username = $this->request->data('username');
+               $user->password = $this->request->data('password');
+               $user->website = $this->request->data('website');
                $user->devUUID = $guid;
                $user->status = 1;
                $user->email = $this->request->data('email');
