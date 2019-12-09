@@ -100,14 +100,14 @@ class UsersController extends AppController {
      {
         $this->autoRender = false;
 
-         $user = $this->Users->find('first', array(
+         $user = $this->Users->find('all', array(
            'conditions' => array(
              'token' => $token,
              'guid' => $guid,
              'status' => 1
            )
          ));
-         $this->Users->id = $id;
+         $this->Users->id = $users->first()['Users']['id'];
          $user->status = 0;
          $this->Users->save($user);
 
