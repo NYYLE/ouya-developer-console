@@ -65,14 +65,14 @@ class UsersController extends AppController {
 
              if ($users->first() == null) {
                $guid = $this->getGUID();
+               $my_token = Security::hash(Security::randomBytes(32));
+
+               debug();exit;
+               $data = $this->request->getData();
+               $data['devUUID'] = $guid;
+               $data['token'] = $my_token;
 
                $user = $this->Users->patchEntity($user, $this->request->getData());
-               $user->devUUID = $guid;
-               $user->status = 1;
-               $user->email = $this->request->data('email');
-
-               $my_token = Security::hash(Security::randomBytes(32));
-               $user->token = $my_token;
 
                if ($this->Users->save($user)) {
                    $this->Flash->success(__('Registration successful. Your confirmation email has been sent'));
@@ -109,11 +109,13 @@ class UsersController extends AppController {
            )
          ));
 
+         debug($token);debug($guid);
+
          $id = $user_find->first()['id'];
          $user = $this->Users->get($id);
 
          $user->status = 0;
-        
+
          $this->Users->save($user);
 
          $this->Flash->success(__('Verification successful. You can now login'));
