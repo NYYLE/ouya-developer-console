@@ -2,10 +2,4 @@
 <p>
 Welcome to the OUYA World Dev Portal, to complete your account registration, please click the link below.<br>
 <br>
-<?php
-echo $this->Html->link('Verify Email', array('controller' => 'users', 'action' => 'verification', $token), array('class' => 'nav-link'));
- ?>
-</p>
-<p>
-
-</p>
+<a href="http://devs.ouya.world/users/verification/<?php echo $guid ?>/<?php echo $token ?>">Verify Email</a>

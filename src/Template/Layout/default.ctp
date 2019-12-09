@@ -117,7 +117,7 @@ echo $this->Html->script([
 <nav class="navbar navbar-expand-md py-3 navbar-dark bg-dark shadow-sm">
 <div class="container">
   <a href="#" class="navbar-brand">
-    <?php echo $this->Html->image('logo.png', ['alt' => 'OUYA WORLD', 'class' => 'd-inline-block align-middle mr-2', 'width' => 400]); ?>
+    <?php echo $this->Html->image('logo.png', ['alt' => 'OUYA WORLD', 'class' => 'd-inline-block align-middle mr-2', 'width' => 400, 'url' => ['controller' => 'games', 'action' => 'index']]); ?>
   </a>
 
   <button type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><span class="navbar-toggler-icon"></span></button>

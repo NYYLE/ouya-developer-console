@@ -73,6 +73,8 @@ class AppController extends Controller
                 'action' => 'index',
             ]
         ]);
+
+        $this->Auth->allow(['register', 'view', 'index', 'verification']);
     }
 
     public function beforeRender(Event $event) {

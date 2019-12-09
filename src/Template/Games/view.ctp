@@ -56,7 +56,9 @@
   <div class="col-sm-5">
     <p><?= $game['description']; ?></p>
     <p><small>Created: <?= $game['firstPublishedAt'] ?></small></p>
+    <?php if (!empty($User_admin) && $User_admin == '1') { ?>
     <p><?= $this->Html->link('Edit', ['action' => 'edit', $game['packageName']]) ?></p>
+    <?php } ?>
   </div>
 
   <div class="col-sm-7">

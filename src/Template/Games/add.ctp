@@ -13,18 +13,18 @@
 Please fill in the form below with all the relavant details to your game. Make sure your APK has a valid package name, versionName and versionCode.
 </p>
 <?php
-  
+
     $errors = $session->read('Session_errors');
     $display = $session->read('Session_display');
 
     echo $this->Form->create($game, array('type' => 'file'));
 
-    echo $this->Form->control('title', array('type' => 'text', 'required' => true, 'value' => $display['title']));
+    echo $this->Form->control('title', array('type' => 'text', 'required' => true, 'value' => $display['title'], 'autocomplete' => 'off'));
     if (!empty($errors['title'])) {
       echo "<label>" . $errors['title'][0] . "</label>";
     }
 
-    echo $this->Form->control('description', array('type' => 'text', 'rows' => 5, 'required' => true, 'value' => $display['description']));
+    echo $this->Form->control('description', array('type' => 'text', 'rows' => 5, 'required' => true, 'value' => $display['description'], 'autocomplete' => 'off'));
     if (!empty($errors['description'])) {
       echo "<label>" . $errors['description'][0] . "</label>";
     }
@@ -79,7 +79,7 @@ Please fill in the form below with all the relavant details to your game. Make s
       echo "<label class='error-label'>" . $errors['apk']['validExtension'] . "</label>";
     }
 
-    echo $this->Form->control('website', array('required' => false, 'value' => $display['website']));
+    echo $this->Form->control('website', array('required' => false, 'value' => $display['website'], 'autocomplete' => 'off'));
     if (!empty($errors['website'])) {
       echo "<label class='error-label'>" . $errors['website'][0] . "</label>";
     }

@@ -15,20 +15,26 @@ class GamesController extends AppController
         $this->Auth->allow(['index', 'view']);
     }
 
-    public function index($page = 0)
+    public function index($page = 1)
     {
         $http = new Client();
 
-        $response = $http->get('https://dev.dcrich.net/api/v1/gamedata');
-        $array = $menuItems = array_slice($response->getJson(), (10 * $page), 10 );
-        $games = array();
-
-        foreach ($array as $game) {
-
-          $response = $http->get('http://ouya.dcrich.net:35791/api/v1/gamedata/' . $game['packageName']);
-          $games[] = $response->getJson();
+        if (!empty($this->request->params['?']['page'])) {
+          $page = $this->request->params['?']['page'];
         }
-        //debug($games);
+        $response = $http->get('https://client.ouya.world/api/v1/gamedata?page=' . $page);
+        $games_data = $response->getJson();
+
+        $pages = $games_data['count'];
+        $total_pages = (int) ($pages / 20);
+
+        foreach ($games_data['results'] as $game) {
+          $games[] = $game;
+        }
+
+        $this->set('page', $page);
+        $this->set('total_pages', $total_pages);
+
         $this->set(compact('games'));
     }
 
@@ -267,12 +273,6 @@ class GamesController extends AppController
              $game->title = $this->request->data('title');
              $game->data = json_encode($game_data);
 
-             $http = new Client();
-             $response = $http->post('https://dev.dcrich.net/api/v1/gamedata', [
-              'title' => 'test',
-              'body' => $game_data
-            ]);
-
              if ($this->Games->save($game)) {
                  $this->Flash->success(__('Your game has been saved.'));
                  return $this->redirect(['action' => 'index']);
@@ -372,7 +372,13 @@ class GamesController extends AppController
 
         $game = $this->Games->get($id);
 
-        // TODO: SEND GAMEDATA TO API
+        $game_data = $game['data'];
+
+        $http = new Client();
+        $response = $http->post('https://dev.dcrich.net/api/v1/gamedata', [
+         'title' => 'test',
+         'body' => $game_data
+       ]);
 
         $game['status'] = 1;
 

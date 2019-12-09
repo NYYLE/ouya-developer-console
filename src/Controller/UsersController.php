@@ -57,15 +57,16 @@ class UsersController extends AppController {
              $users = $this->Users->find('all', array(
                'conditions' => array(
                  'OR' => array(
-                   array('username' => $this->request->data('username')),
-                   array('email' => $this->request->data('email')),
+                   'username' => $this->request->data('username'),
+                   'email' => $this->request->data('email'),
                  )
                ),
              ));
 
-             if (empty($users->username)) {
+             if ($users->first() == null) {
+               $guid = $this->getGUID();
                $user = $this->Users->patchEntity($user, $this->request->getData());
-               $user->devUUID = $this->getGUID();
+               $user->devUUID = $guid;
                $user->status = 1;
                $user->email = $this->request->data('email');
 
@@ -79,7 +80,8 @@ class UsersController extends AppController {
                    $email->from(['ouya.world.dev@gmail.com' => 'OUYA World Dev Portal'])      // sender email
                   ->template('registered', 'default') // set the template to welcome message
                   ->to($this->request->data('email')) // receiver email
-                  ->setViewVars(['username' => $this->request->data('username')])
+                  ->emailFormat('html')
+                  ->setViewVars(['username' => $this->request->data('username'), 'token' => $my_token, 'guid' => $guid])
                   ->subject('OUYA Developer Portal')   // message subject
                   ->replyTo('ouya.world.dev@gmail.com') // email to reply to
                   ->from('ouya.world.dev@gmail.com') // who the email is from
@@ -94,17 +96,18 @@ class UsersController extends AppController {
          $this->set('user', $user);
      }
 
-     public function verification($token)
+     public function verification($guid, $token)
      {
         $this->autoRender = false;
 
          $user = $this->Users->find('first', array(
            'conditions' => array(
              'token' => $token,
+             'guid' => $guid,
              'status' => 1
            )
          ));
-         $this->Users->id = $user['User']['id'];
+         $this->Users->id = $id;
          $user->status = 0;
          $this->Users->save($user);
 
