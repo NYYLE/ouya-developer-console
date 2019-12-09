@@ -95,35 +95,43 @@ span.ratingCount {
 <ul class="gameslist">
 <?php
 $i = 0;
-foreach ($rejected_games as $game) {
-  //debug($game);
-  if ($i % 2) {
-    $style = "background-color: #b1b1b1; border-radius: 10px;";
-  } else {
-    $style = "background-color: #f5f5f5; border-radius: 10px;";
-  }
-  ?>
-<li style="<?php echo $style ?>">
-  <a href="../games/view/<?php echo $game['game_data']['packageName']; ?>">
-    <img class="posterImage" src="<?php echo $game['game_data']['media']['discover'] ?>" data-original="<?php echo $game['game_data']['media']['discover'] ?>" width="235" height="132" alt="<?php echo $game['game_data']['title'] ?>" style="display: block;">
-    <noscript><img class="posterImage" src="<?php echo $game['game_data']['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
-    <div class="gamelistDetails">
-      <h3 class="gamelistTitle"><?php echo $game['game_data']['title'] ?></h3>
+if ($rejected_games != null && count($rejected_games) > 0) {
+  foreach ($rejected_games as $game) {
+    //debug($game);
+    if ($i % 2) {
+      $style = "background-color: #b1b1b1; border-radius: 10px;";
+    } else {
+      $style = "background-color: #f5f5f5; border-radius: 10px;";
+    }
+    ?>
+  <li style="<?php echo $style ?>">
+    <a href="../games/view/<?php echo $game['game_data']['packageName']; ?>">
+      <img class="posterImage" src="<?php echo $game['game_data']['media']['discover'] ?>" data-original="<?php echo $game['game_data']['media']['discover'] ?>" width="235" height="132" alt="<?php echo $game['game_data']['title'] ?>" style="display: block;">
+      <noscript><img class="posterImage" src="<?php echo $game['game_data']['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
+      <div class="gamelistDetails">
+        <h3 class="gamelistTitle"><?php echo $game['game_data']['title'] ?></h3>
 
-      <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
-      <div class="gameTaglist">
-        <div class="gameTag">Retro</div>
-        <div class="gameTag">Role-Playing</div>
-        <div class="gameTag">Arcade/Pinball</div>
-      <div class="clearfix">
+        <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
+        <div class="gameTaglist">
+          <div class="gameTag">Retro</div>
+          <div class="gameTag">Role-Playing</div>
+          <div class="gameTag">Arcade/Pinball</div>
+        <div class="clearfix">
+        </div>
       </div>
+      <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['game_data']['packageName']), array('class' => 'btn btn-secondary')); ?>
     </div>
-    <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['game_data']['packageName']), array('class' => 'btn btn-secondary')); ?>
-  </div>
-</a>
-</li>
-<?php
-$i++;
+  </a>
+  </li>
+  <?php
+  $i++;
+  }
+} else {
+  ?>
+  <p>
+  You have no rejected games.
+  </p>
+  <?php
 } ?>
 </ul>
 
@@ -133,34 +141,42 @@ $i++;
 <ul class="gameslist">
 <?php
 $i = 0;
-foreach ($submitted_games as $game) {
-  //debug($game);
-  if ($i % 2) {
-    $style = "background-color: #f5f5f5; border-radius: 10px;";
-  } else {
-    $style = "background-color: #b1b1b1; border-radius: 10px;";
-  }
-  ?>
-<li style="<?php echo $style ?>">
-  <a href="../games/view/<?php echo $game['packageName']; ?>">
-    <img class="posterImage" src="<?php echo $game['media']['discover'] ?>" data-original="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
-    <noscript><img class="posterImage" src="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
-    <div class="gamelistDetails">
-      <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
+if ($submitted_games != null && count($submitted_games) > 0) {
+  foreach ($submitted_games as $game) {
+    //debug($game);
+    if ($i % 2) {
+      $style = "background-color: #f5f5f5; border-radius: 10px;";
+    } else {
+      $style = "background-color: #b1b1b1; border-radius: 10px;";
+    }
+    ?>
+  <li style="<?php echo $style ?>">
+    <a href="../games/view/<?php echo $game['packageName']; ?>">
+      <img class="posterImage" src="<?php echo $game['media']['discover'] ?>" data-original="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
+      <noscript><img class="posterImage" src="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
+      <div class="gamelistDetails">
+        <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
 
-      <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
-      <div class="gameTaglist">
-        <div class="gameTag">Retro</div>
-        <div class="gameTag">Role-Playing</div>
-        <div class="gameTag">Arcade/Pinball</div>
-      <div class="clearfix">
+        <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
+        <div class="gameTaglist">
+          <div class="gameTag">Retro</div>
+          <div class="gameTag">Role-Playing</div>
+          <div class="gameTag">Arcade/Pinball</div>
+        <div class="clearfix">
+        </div>
       </div>
+      <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['packageName']), array('class' => 'btn btn-secondary')); ?>
     </div>
-    <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['packageName']), array('class' => 'btn btn-secondary')); ?>
-  </div>
-</a>
-</li>
-<?php
-$i++;
-} ?>
+  </a>
+  </li>
+  <?php
+  $i++;
+  }
+} else {
+  ?>
+  <p>
+  You have not submitted any games.
+  </p>
+  <?php
+}?>
 </ul>

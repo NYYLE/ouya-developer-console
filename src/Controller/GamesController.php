@@ -267,8 +267,6 @@ class GamesController extends AppController
                )
              );
 
-             debug(json_encode($game_data)); exit;
-
              $game->user_id = $this->request->session()->read('Auth.User.id');
              $game->title = $this->request->data('title');
              $game->data = json_encode($game_data);

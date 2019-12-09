@@ -19,10 +19,8 @@ class UsersController extends AppController {
         $this->loadModel('Games');
          $http = new Client();
 
-         $response = $http->get('http://ouya.dcrich.net:35791/api/v1/gamedata/com.ATG.DU');
-         $array = array($response->getJson(), $response->getJson(), $response->getJson(), $response->getJson());
-         $submitted_games = $array;
-         //debug($games);
+         $response = $http->get('https://client.ouya.world/api/v1/developers/' . $this->request->session()->read('Auth.User.uuid') . '/gamedata');
+         $submitted_games = $response->getJson();
 
          $rejected_game_find = $this->Games->find('all', array(
            'conditions' => array(
