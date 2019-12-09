@@ -65,6 +65,7 @@ class UsersController extends AppController {
 
              if ($users->first() == null) {
                $guid = $this->getGUID();
+
                $user = $this->Users->patchEntity($user, $this->request->getData());
                $user->devUUID = $guid;
                $user->status = 1;
@@ -100,7 +101,7 @@ class UsersController extends AppController {
      {
         $this->autoRender = false;
 
-         $user = $this->Users->find('all', array(
+         $user_find = $this->Users->find('all', array(
            'conditions' => array(
              'token' => $token,
              'devUUID' => $guid,
@@ -108,9 +109,12 @@ class UsersController extends AppController {
            )
          ));
 
-         $this->Users->id = $user->first()['Users']['id'];
-         $user_data->status = 0;
-         $this->Users->save($user_data);
+         $id = $user_find->first()['id'];
+         $user = $this->Users->get($id);
+
+         $user->status = 0;
+        
+         $this->Users->save($user);
 
          $this->Flash->success(__('Verification successful. You can now login'));
 
