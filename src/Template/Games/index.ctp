@@ -144,6 +144,7 @@ if ($games != null && count($games) > 0) {
   </li>
   <?php
   $i++;
+  }
 } else {
   ?>
   <p>
