@@ -22,7 +22,7 @@ class GamesController extends AppController
         if (!empty($this->request->params['?']['page'])) {
           $page = $this->request->params['?']['page'];
         }
-        $response = $http->get('https://client.ouya.world/api/v1/gamedata?page=' . $page);
+        $response = $http->get('https://api.ouya.world/api/v1/gamedata?page=' . $page);
         $games_data = $response->getJson();
 
         $pages = $games_data['count'];
@@ -60,7 +60,7 @@ class GamesController extends AppController
     {
         $http = new Client();
 
-        $response = $http->get('https://dev.dcrich.net/api/v1/gamedata/' . $package_name);
+        $response = $http->get('https://api.ouya.world/api/v1/gamedata/' . $package_name);
         $game = $response->getJson();
 
         $this->set(compact('game'));
@@ -297,7 +297,7 @@ class GamesController extends AppController
 
          $package_name = 'COM.TEST.ODC';
 
-        $response = $http->get('https://dev.dcrich.net/api/v1/gamedata/' . $package_name);
+        $response = $http->get('https://api.ouya.world/api/v1/gamedata/' . $package_name);
         $game = $response->getJson();
 
         if ($this->request->is('post')) {
@@ -355,7 +355,7 @@ class GamesController extends AppController
 
           }
 
-          $response = $http->patch('https://dev.dcrich.net/api/v1/gamedata/' . $package_name, [
+          $response = $http->patch('https://api.ouya.world/api/v1/gamedata/' . $package_name, [
            'title' => 'test',
            'body' => json_encode($changes)
           ]);
@@ -373,7 +373,7 @@ class GamesController extends AppController
         $game_data = $game['data'];
 
         $http = new Client();
-        $response = $http->post('https://dev.dcrich.net/api/v1/gamedata', [
+        $response = $http->post('https://api.ouya.world/api/v1/gamedata', [
          'title' => 'test',
          'body' => $game_data
        ]);

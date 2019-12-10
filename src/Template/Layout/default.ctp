@@ -13,7 +13,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-$cakeDescription = 'CakePHP: the rapid development php framework';
+$cakeDescription = 'DEVS.OUYA.WORLD';
 
 echo $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
 echo $this->Html->script([
@@ -98,10 +98,13 @@ echo $this->Html->script([
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        <?= $cakeDescription ?>:
-        <?= $this->fetch('title') ?>
+        <?= $cakeDescription ?>
     </title>
-    <?= $this->Html->meta('icon') ?>
+    <?= $this->Html->meta(
+          'favicon.ico',
+          '/favicon.ico',
+          ['type' => 'icon']
+); ?>
 
     <?= $this->Html->css('base.css') ?>
     <?= $this->Html->css('style.css') ?>

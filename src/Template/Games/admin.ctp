@@ -95,35 +95,46 @@ span.ratingCount {
 <ul class="gameslist">
 <?php
 $i = 0;
-foreach ($games as $game) {
-  debug($game);
-  if ($i % 2) {
-    $style = "background-color: #f5f5f5;";
-  } else {
-    $style = "background-color: #b1b1b1;";
-  }
-  ?>
-<li style="<?php echo $style ?>">
-  <a href="../games/view/<?php echo $game['game_data']['packageName']; ?>">
-    <img class="posterImage" src="<?php echo $game['game_data']['discover'] ?>" data-original="<?php echo $game['game_data']['discover'] ?>" width="235" height="132" alt="<?php echo $game['game_data']['title'] ?>" style="display: block;">
-    <noscript><img class="posterImage" src="<?php echo $game['game_data']['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
-    <div class="gamelistDetails">
-      <h3 class="gamelistTitle"><?php echo $game['game_data']['title'] ?></h3>
-
-      <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
-      <div class="gameTaglist">
-        <div class="gameTag">Retro</div>
-        <div class="gameTag">Role-Playing</div>
-        <div class="gameTag">Arcade/Pinball</div>
-      <div class="clearfix">
+if ($games != null && count($games) > 0) {
+  foreach ($games as $game) {
+    debug($game);
+    if ($i % 2) {
+      $style = "background-color: #f5f5f5;";
+    } else {
+      $style = "background-color: #b1b1b1;";
+    }
+    ?>
+  <li style="<?php echo $style ?>">
+    <a href="../games/view/<?php echo $game['game_data']['packageName']; ?>">
+      <img class="posterImage" src="<?php echo $game['game_data']['discover'] ?>" data-original="<?php echo $game['game_data']['discover'] ?>" width="235" height="132" alt="<?php echo $game['game_data']['title'] ?>" style="display: block;">
+      <noscript><img class="posterImage" src="<?php echo $game['game_data']['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
+      <div class="gamelistDetails">
+        <h3 class="gamelistTitle"><?php echo $game['game_data']['title'] ?></h3>
+        <h4 class="gamelistRelease"><?php echo explode(' by ', $game['overview'])[0] ?></h4>
+        <h4 class="gamelistDeveloper"><?php echo $game['developer']['name'] ?></h4>
+        <div class="gameTaglist">
+          <?php foreach ($game['genres'] as $tag) {
+            ?>
+            <div class="gameTag"><?php echo $tag ?></div>
+            <?php
+          }
+          ?>
+        <div class="clearfix">
+        </div>
       </div>
+      <?php echo $this->html->link('Approve', array('controller' => 'games', 'action' => 'approve', $game['id']), array('confirm' => 'Are you sure you want to approve ' . $game['game_data']['title'] . '?', 'class' => 'btn btn-success')); ?>
+      <?php echo $this->html->link('Reject', array('controller' => 'games', 'action' => 'reject', $game['id']), array('class' => 'btn btn-danger')); ?>
     </div>
-    <?php echo $this->html->link('Approve', array('controller' => 'games', 'action' => 'approve', $game['id']), array('confirm' => 'Are you sure you want to approve ' . $game['game_data']['title'] . '?', 'class' => 'btn btn-success')); ?>
-    <?php echo $this->html->link('Reject', array('controller' => 'games', 'action' => 'reject', $game['id']), array('class' => 'btn btn-danger')); ?>
-  </div>
-</a>
-</li>
-<?php
-$i++;
-} ?>
+  </a>
+  </li>
+  <?php
+  $i++;
+  }
+} else {
+  ?>
+  <p>
+  No games to approve.
+  </p>
+  <?php
+}?>
 </ul>

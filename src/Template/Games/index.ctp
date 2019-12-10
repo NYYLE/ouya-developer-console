@@ -39,7 +39,7 @@
 
 span.stars, span.stars span {
     display: block;
-    background: url(/web/20190522062303im_/https://www.ouya.tv/wp-content/themes/ouya/images/star-20x20.png) 0 -20px repeat-x;
+    background: url(img/star-20x20.png) 0 -20px repeat-x;
     width: 100px;
     height: 20px;
     float: left;
@@ -51,6 +51,22 @@ span.ratingCount {
     font-size: .9em;
     margin: 4px 0;
     color: #3E3D45;
+}
+
+.gamelistDetails .stars {
+    margin: 4px 0 4px 0;
+}
+
+span.ratingCount {
+    float: left;
+    line-height: 24px;
+    font-size: .9em;
+    margin: 4px 0;
+    color: #3E3D45;
+}
+
+span.stars span {
+    background-position: 0 0;
 }
 
 .gamelistRelease {
@@ -94,34 +110,47 @@ span.ratingCount {
 <ul class="gameslist">
 <?php
 $i = 0;
-foreach ($games as $game) {
-  if ($i % 2) {
-    $style = "border-radius: 10px;";
-  } else {
-    $style = "background-color: #ffffff; border-radius: 10px;";
-  }
-  ?>
-<li style="<?php echo $style ?>">
-  <a href="games/view/<?php echo $game['packageName'] ?>">
-    <img class="posterImage" src="<?php echo $game['discover'] ?>" data-original="<?php echo $game['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
-    <noscript><img class="posterImage" src="<?php echo $game['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
-    <div class="gamelistDetails">
-      <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
-      <span class="stars"><span style="width: 80px;"></span></span>
-      <span class="ratingCount">&nbsp;(215)</span>
-      <h4 class="gamelistRelease">Released: August 2013</h4>
-      <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
-      <div class="gameTaglist">
-
-      <div class="clearfix">
+if ($games != null && count($games) > 0) {
+  foreach ($games as $game) {
+  //  debug($game);
+    if ($i % 2) {
+      $style = "border-radius: 10px;";
+    } else {
+      $style = "background-color: #ffffff; border-radius: 10px;";
+    }
+    ?>
+  <li style="<?php echo $style ?>">
+    <a href="games/view/<?php echo $game['packageName'] ?>">
+      <img class="posterImage" src="<?php echo $game['discover'] ?>" data-original="<?php echo $game['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
+      <noscript><img class="posterImage" src="<?php echo $game['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
+      <div class="gamelistDetails">
+        <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
+        <span class="stars"><span style="width: <?php echo $game['rating']['average'] * 20 ?>px;"></span></span>
+        <span class="ratingCount">&nbsp;(<?php echo $game['rating']['count'] ?>)</span>
+        <h4 class="gamelistRelease"><?php echo explode(' by ', $game['overview'])[0] ?></h4>
+        <h4 class="gamelistDeveloper"><?php echo $game['developer']['name'] ?></h4>
+        <div class="gameTaglist">
+          <?php foreach ($game['genres'] as $tag) {
+            ?>
+            <div class="gameTag"><?php echo $tag ?></div>
+            <?php
+          }
+          ?>
+        <div class="clearfix">
+        </div>
       </div>
     </div>
-  </div>
-</a>
-</li>
-<?php
-$i++;
-} ?>
+  </a>
+  </li>
+  <?php
+  $i++;
+} else {
+  ?>
+  <p>
+  No games to show.
+  </p>
+  <?php
+}?>
 </ul>
 
 <ul class="pagination">
