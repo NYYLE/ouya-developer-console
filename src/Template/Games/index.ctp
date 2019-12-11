@@ -122,7 +122,7 @@ if ($games != null && count($games) > 0) {
   <li style="<?php echo $style ?>">
     <a href="games/view/<?php echo $game['packageName'] ?>">
       <img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['discover']) ?>" data-original="<?php echo $game['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
-      <noscript><img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['discover']_ ?>" width="235" height="132" alt="100 Rogues"></noscript>
+      <noscript><img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['discover']) ?>" width="235" height="132" alt="100 Rogues"></noscript>
       <div class="gamelistDetails">
         <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
         <span class="stars"><span style="width: <?php echo $game['rating']['average'] * 20 ?>px;"></span></span>
