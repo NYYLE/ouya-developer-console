@@ -17,10 +17,18 @@ class UsersController extends AppController {
      public function games()
      {
         $this->loadModel('Games');
-         $http = new Client();
 
-         $response = $http->get('https://client.ouya.world/api/v1/developers/' . $this->request->session()->read('Auth.User.uuid') . '/gamedata');
-         $submitted_games = $response->getJson();
+          $submitted_game_find = $this->Games->find('all', array(
+           'conditions' => array(
+             'status' => 0,
+             'user_id' => $this->request->session()->read('Auth.User.id')
+           ),
+         ));
+         $submitted_games = array();
+         foreach ($submitted_game_find as $game) {
+           $game['game_data'] = json_decode($game['data'], true);
+           $submitted_games[] = $game;
+         }
 
          $rejected_game_find = $this->Games->find('all', array(
            'conditions' => array(

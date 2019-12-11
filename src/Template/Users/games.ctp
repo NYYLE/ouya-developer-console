@@ -34,7 +34,7 @@
     font-size: 24px;
     line-height: 25px;
     color: #fc4422;
-    margin: 0;
+    margin: 0 0 4px 0;
 }
 
 span.stars, span.stars span {
@@ -143,29 +143,31 @@ if ($rejected_games != null && count($rejected_games) > 0) {
 $i = 0;
 if ($submitted_games != null && count($submitted_games) > 0) {
   foreach ($submitted_games as $game) {
-    //debug($game);
+  //  debug($game);
     if ($i % 2) {
-      $style = "background-color: #f5f5f5; border-radius: 10px;";
+      $style = "border-radius: 10px;";
     } else {
-      $style = "background-color: #b1b1b1; border-radius: 10px;";
+      $style = "background-color: #ffffff; border-radius: 10px;";
     }
     ?>
   <li style="<?php echo $style ?>">
-    <a href="../games/view/<?php echo $game['packageName']; ?>">
-      <img class="posterImage" src="<?php echo $game['media']['discover'] ?>" data-original="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
-      <noscript><img class="posterImage" src="<?php echo $game['media']['discover'] ?>" width="235" height="132" alt="100 Rogues"></noscript>
+    <a href="games/view/<?php echo $game['packageName'] ?>">
+      <img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['game_data']['discover']) ?>" data-original="<?php echo $game['game_data']['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
+      <noscript><img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['game_data']['discover']) ?>" width="235" height="132" alt="100 Rogues"></noscript>
       <div class="gamelistDetails">
-        <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
-
-        <h4 class="gamelistDeveloper">Developer: Fusion Reactions</h4>
+        <h3 class="gamelistTitle"><?php echo $game['game_data']['title'] ?></h3>
+        <h4 class="gamelistRelease"><?php echo explode(' by ', $game['game_data']['overview'])[0] ?></h4>
+        <h4 class="gamelistDeveloper"><?php echo $game['game_data']['developer']['name'] ?></h4>
         <div class="gameTaglist">
-          <div class="gameTag">Retro</div>
-          <div class="gameTag">Role-Playing</div>
-          <div class="gameTag">Arcade/Pinball</div>
+          <?php foreach ($game['game_data']['genres'] as $tag) {
+            ?>
+            <div class="gameTag"><?php echo $tag ?></div>
+            <?php
+          }
+          ?>
         <div class="clearfix">
         </div>
       </div>
-      <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['packageName']), array('class' => 'btn btn-secondary')); ?>
     </div>
   </a>
   </li>

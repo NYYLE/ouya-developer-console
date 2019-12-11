@@ -3,7 +3,7 @@
 .gameslist {
     list-style-type: none;
     padding: 0;
-    margin: 30px 0 165px 0;
+    margin: 30px 0 30px 0;
     background: url(/web/20190522062303im_/https://www.ouya.tv/wp-content/themes/ouya/images/games-top-border.png) no-repeat scroll 0 top;
 }
 
@@ -159,8 +159,9 @@ if ($games != null && count($games) > 0) {
     <li class="<?php if($page <= 1){ echo 'disabled'; } ?>">
         <a href="<?php if($page <= 1){ echo '#'; } else { echo "?page=".($page - 1); } ?>">Prev</a>
     </li>
-    <li class="<?php if($page >= $total_pages){ echo 'disabled'; } ?>">
+
+    <li style="float: right;"><a href="?page=<?php echo $total_pages; ?>">Last</a></li>
+    <li class="<?php if($page >= $total_pages){ echo 'disabled'; } ?>" style="float: right;">
         <a href="<?php if($page >= $total_pages){ echo '#'; } else { echo "?page=".($page + 1); } ?>">Next</a>
     </li>
-    <li><a href="?page=<?php echo $total_pages; ?>">Last</a></li>
 </ul>

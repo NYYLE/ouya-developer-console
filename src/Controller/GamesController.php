@@ -139,8 +139,6 @@ class GamesController extends AppController
 
           $package_name = $manifest->getPackageName();
 
-          $package_name = 'COM.TEST.OWD';
-
           $version_name = $manifest->getVersionName();
           $version_code = $manifest->getVersionCode();
           $min_sdk_level = $manifest->getMinSdkLevel();
@@ -157,7 +155,7 @@ class GamesController extends AppController
           $host = 'statics.ouya.world';
           $username = 'dh_q4dnv3';
           $password = 'av^6H2^7';
-          $dev_uuid = $this->request->session()->read('Auth.User.uuid');
+          $dev_uuid = $this->request->session()->read('Auth.User.devUUID');
           $remote_file = '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/';
 
           ini_set('default_socket_timeout', 2);
@@ -232,23 +230,23 @@ class GamesController extends AppController
               'packageName' => $package_name,
               'title' => $this->request->data('title'),
               'description' => $this->request->data('description'),
-              'players' =>  array($this->request->data('players')),
+              'players' => array_map('intval', $this->request->data('players')),
               'genres' => $this->request->data('genre'),
               'releases' => array([
                  'name' => $version_name,
                  'versionCode' => $version_code,
-                 'uuid' => $this->request->session()->read('Auth.User.uuid'),
+                 'uuid' => $this->request->session()->read('Auth.User.devUUID'),
                  'date' => date("Y-m-d")."T".date("H:i:s")."Z",
-                 'url' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
+                 'url' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
                  'size' => filesize($this->request->data('apk')['tmp_name']),
                  'md5sum' => $md5_sum,
                  'publicSize' => 0,
                  'nativeSize' => 0,
                ]),
                'media' => $details,
-               'discover' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.uuid') . '/' . $package_name . '/' . 'discover.png',
+               'discover' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . 'discover.png',
                'developer' => array(
-                 'uuid' => $this->request->session()->read('Auth.User.uuid'),
+                 'uuid' => $this->request->session()->read('Auth.User.devUUID'),
                  'name' => $this->request->session()->read('Auth.User.username'),
                  'supportEmail' => $this->request->session()->read('Auth.User.email'),
                  'supportPhone' => null,
@@ -272,7 +270,7 @@ class GamesController extends AppController
              $game->data = json_encode($game_data);
 
              if ($this->Games->save($game)) {
-                 $this->Flash->success(__('Your game has been saved.'));
+                 $this->Flash->success(__('Your game has been saved. Please wait until it has been approved.'));
                  return $this->redirect(['action' => 'index']);
              }
              $this->Flash->error(__('Unable to add your game.'));
@@ -373,10 +371,8 @@ class GamesController extends AppController
         $game_data = $game['data'];
 
         $http = new Client();
-        $response = $http->post('https://api.ouya.world/api/v1/gamedata', [
-         'title' => 'test',
-         'body' => $game_data
-       ]);
+
+      $response = $http->post('https://api.ouya.world/api/v1/gamedata', $game_data, ['type' => 'json']);
 
         $game['status'] = 1;
 

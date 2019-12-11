@@ -29,10 +29,17 @@ Please fill in the form below with all the relavant details to your game. Make s
       echo "<label>" . $errors['description'][0] . "</label>";
     }
 
-    echo $this->Form->control('players', array('type' => 'number', 'required' => true, 'value' => $display['players']));
-    if (!empty($errors['players'])) {
-      echo "<label>" . $errors['players'][0] . "</label>";
-    }
+    ?>
+    <label for="id_label" class="select-input-label required" style="color: #4d4d4d; font-weight: bold;">
+      Players<span style="color: #C3232D;"> * </span>
+      <select class="players-input" name="players[]" multiple="multiple" required value=<?php echo $display['players'] ?>, error=<?php echo $errors['players'] ?>>
+        <option value=1>1</option>
+        <option value=2>2</option>
+        <option value=3>3</option>
+        <option value=4>4</option>
+      </select>
+    </label>
+    <?php
 
     echo $this->Form->label('content_rating', 'Content Rating', array('style' => 'font-weight: bold', 'id' => 'content_rating_id'));
     echo $this->Form->select('content_rating', array('Everybody', '9+', '12+', '17+'), array('required' => true));
@@ -41,10 +48,10 @@ Please fill in the form below with all the relavant details to your game. Make s
     }
 
     ?>
-    <label for="id_label" class="genre-input-label required" style="color: #4d4d4d; font-weight: bold;">
+    <label for="id_label" class="select-input-label required" style="color: #4d4d4d; font-weight: bold;">
       Genres<span style="color: #C3232D;"> * </span>
 
-      <select class="genre-input" id="id_label" name="genre[]" multiple="multiple" required value=<?php echo $display['genre'] ?>, error=<?php echo $errors['genre'] ?>>
+      <select class="genre-input" name="genre[]" multiple="multiple" required value=<?php echo $display['genre'] ?>, error=<?php echo $errors['genre'] ?>>
         <?php
         foreach ($genres as $genre) {
         ?>
@@ -91,7 +98,14 @@ Please fill in the form below with all the relavant details to your game. Make s
 <script>
 
 $(document).ready(function() {
-    $('.genre-input').select2();
+  console.log('test');
+  $('.genre-input').select2();
+    console.log('test');
+    $('.players-input').select2();
+
 });
+
+
+
 
 </script>
