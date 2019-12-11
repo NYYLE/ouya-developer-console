@@ -12,28 +12,41 @@ Please fill in the form below with ONLY the changes to your game. If you would l
 
     echo $this->Form->create(false, array('type' => 'file'));
 
-    debug($game);
+  //  debug($game);
 
-    echo $this->Form->control('title', array('type' => 'text', 'required' => false, 'value' => $display['title'], 'autocomplete' => 'off', "placeholder" => $game['']));
+    echo $this->Form->control('title', array('type' => 'textare', 'required' => false, 'value' => $display['title'], 'autocomplete' => 'off', "placeholder" => $game['title']));
     if (!empty($errors['title'])) {
       echo "<label>" . $errors['title'][0] . "</label>";
     }
 
-    echo $this->Form->control('description', array('type' => 'text', 'rows' => 5, 'required' => false, 'value' => $display['description'], 'autocomplete' => 'off'));
+    echo $this->Form->control('description', array('type' => 'textarea', 'rows' => 5, 'required' => false, 'value' => $display['description'], 'autocomplete' => 'off', "placeholder" => $game['description']));
     if (!empty($errors['description'])) {
       echo "<label>" . $errors['description'][0] . "</label>";
     }
 
-    echo $this->Form->control('players', array('type' => 'number', 'required' => false, 'value' => $display['players']));
+    ?>
+    <label for="id_label" class="select-input-label required" style="color: #4d4d4d; font-weight: bold;">
+      Players<span style="color: #C3232D;"> * </span>
+      <select class="players-input" name="players[]" multiple="multiple" value=<?php echo $game['players'] ?>, error=<?php echo $errors['players'] ?>>
+        <option value=1>1</option>
+        <option value=2>2</option>
+        <option value=3>3</option>
+        <option value=4>4</option>
+      </select>
+    </label>
+    <?php
+
+    echo $this->Form->label('content_rating', 'Content Rating', array('style' => 'font-weight: bold', 'id' => 'content_rating_id'));
+    echo $this->Form->select('content_rating', array('Everybody', '9+', '12+', '17+'), array('required' => false));
     if (!empty($errors['players'])) {
-      echo "<label>" . $errors['players'][0] . "</label>";
+      echo "<label>" . $errors['content_rating'][0] . "</label>";
     }
 
     ?>
     <label for="id_label" class="genre-input-label required" style="color: #4d4d4d; font-weight: bold;">
       Genres<span style="color: #C3232D;"> * </span>
 
-      <select class="genre-input" id="id_label" name="genre[]" multiple="multiple" required value=<?php echo $display['genre'] ?>, error=<?php echo $errors['genre'] ?>>
+      <select class="genre-input" name="genre[]" multiple="multiple" required value=<?php echo $display['genre'] ?>, error=<?php echo $errors['genre'] ?>>
         <?php
         foreach ($genres as $genre) {
         ?>
@@ -48,10 +61,6 @@ Please fill in the form below with ONLY the changes to your game. If you would l
       echo "<label class='error-label'>" . $errors['genre'][0] . "</label>";
     }
 
-    echo $this->Form->control('content_rating', array('type' => 'text', 'required' => false, 'value' => $display['content_rating'])); // Use select 2
-    if (!empty($errors['genre'])) {
-      echo "<label class='error-label'>" . $errors['genre'][0] . "</label>";
-    }
     // media
     echo $this->Form->control('discover', array('label' => 'Discover Image', 'type' => 'file', 'required' => false, 'value' => $display['discover']));
     if (!empty($errors['discover'])) {
@@ -85,7 +94,9 @@ Please fill in the form below with ONLY the changes to your game. If you would l
 <script>
 
 $(document).ready(function() {
-    $('.genre-input').select2();
+  $('.genre-input').select2();
+    $('.players-input').select2();
+
 });
 
 </script>

@@ -119,7 +119,7 @@ echo $this->Html->script([
   <!-- NAVBAR-->
 <nav class="navbar navbar-expand-md py-3 navbar-dark bg-dark shadow-sm">
 <div class="container">
-  <a href="#" class="navbar-brand">
+  <a href="#" class="navbar-brand" style="padding: 0px; margin-right: 0;">
     <?php echo $this->Html->image('logo.png', ['alt' => 'OUYA WORLD', 'class' => 'd-inline-block align-middle mr-2', 'width' => 400, 'url' => ['controller' => 'games', 'action' => 'index']]); ?>
   </a>
 

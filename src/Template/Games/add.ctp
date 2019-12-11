@@ -24,7 +24,7 @@ Please fill in the form below with all the relavant details to your game. Make s
       echo "<label>" . $errors['title'][0] . "</label>";
     }
 
-    echo $this->Form->control('description', array('type' => 'text', 'rows' => 5, 'required' => true, 'value' => $display['description'], 'autocomplete' => 'off'));
+    echo $this->Form->control('description', array('type' => 'textarea', 'rows' => 5, 'required' => true, 'value' => $display['description'], 'autocomplete' => 'off'));
     if (!empty($errors['description'])) {
       echo "<label>" . $errors['description'][0] . "</label>";
     }
@@ -98,9 +98,7 @@ Please fill in the form below with all the relavant details to your game. Make s
 <script>
 
 $(document).ready(function() {
-  console.log('test');
   $('.genre-input').select2();
-    console.log('test');
     $('.players-input').select2();
 
 });

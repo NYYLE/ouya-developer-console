@@ -293,8 +293,6 @@ class GamesController extends AppController
          $session = $this->getRequest()->getSession();
          $this->set('session', $session);
 
-         $package_name = 'COM.TEST.ODC';
-
         $response = $http->get('https://api.ouya.world/api/v1/gamedata/' . $package_name);
         $game = $response->getJson();
 
