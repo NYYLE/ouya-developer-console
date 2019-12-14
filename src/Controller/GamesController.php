@@ -69,7 +69,7 @@ class GamesController extends AppController
     public function details($id)
     {
       $game_data = $this->Games->get($id);
-      $game = json_decode($game_data['data']);
+      $game = json_decode($game_data['data'], true);
 
       $this->set('game_data', $game_data['data']);
 
