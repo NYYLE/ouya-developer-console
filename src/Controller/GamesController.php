@@ -63,8 +63,7 @@ class GamesController extends AppController
         $response = $http->get('https://api.ouya.world/api/v1/gamedata/' . $package_name);
         $game = $response->getJson();
 
-        $this->set(compact('game'));
-        $this->set(compact('response'));
+        $this->set(compact('game', 'response'));
     }
 
     public function add()
@@ -411,6 +410,8 @@ class GamesController extends AppController
           }
 
           $response = $http->patch('https://api.ouya.world/api/v1/gamedata/' . $package_name, json_encode($changes), ['type' => 'json']);
+          $this->Flash->success(__('Your game has been saved. Please wait until it has been approved.'));
+          return $this->redirect(['action' => 'index']);
         } else {
             $this->request->data['title'] = $game['title'];
             $this->request->data['description'] = $game['description'];
