@@ -68,9 +68,12 @@ class GamesController extends AppController
 
     public function details($id)
     {
-      $game = $this->Games->get($id);
+      $game_data = $this->Games->get($id);
+      $game = json_decode($game_data['data']);
 
-      $this->set(compact('game'));
+      $this->set('game_data', $game_data['data']);
+
+      $this->set('game', $game);
     }
 
     public function add()
