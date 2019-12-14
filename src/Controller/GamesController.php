@@ -300,9 +300,6 @@ class GamesController extends AppController
         if ($this->request->is('post')) {
           $validator = new Validator();
           $validator
-              ->notEmpty('title', 'Please add a title')
-              ->notEmpty('discover', 'Please add a description')
-              ->notEmpty('players', 'Please select number of players')
               ->add('apk', [
                 'validExtension' => [
                     'rule' => ['extension',['apk']], // default  ['gif', 'jpeg', 'png', 'jpg']
@@ -327,14 +324,12 @@ class GamesController extends AppController
                     'message' => __('Please only upload MP4s')
                 ]
               ])
-              ->allowEmptyFile('video')
-              ->notEmpty('genres[]', 'Please enter at least one genre');
 
               $errors = $validator->errors($this->request->data());
               if (!empty($errors)) {
                   $session->write('Session_errors', $errors);
                   $this->Flash->error(__('Please fix the errors below.'));
-                  return $this->redirect(['controller' => 'games', 'action' => 'add']);
+                  return $this->redirect(['controller' => 'games', 'action' => 'edit']);
               }
 
           $changes = array();
@@ -405,14 +400,12 @@ class GamesController extends AppController
                 if (isset($change) && !empty($change)) {
                     $changes[$field] = $change;
                 }
-                debug($changes);
                 break;
             }
 
           }
 
           $response = $http->patch('https://api.ouya.world/api/v1/gamedata/' . $package_name, json_encode($changes), ['type' => 'json']);
-          debug($response);
         } else {
             $this->request->data['title'] = $game['title'];
             $this->request->data['description'] = $game['description'];
