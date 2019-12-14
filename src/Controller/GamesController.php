@@ -323,7 +323,7 @@ class GamesController extends AppController
                     'rule' => ['extension',['mp4']], // default  ['gif', 'jpeg', 'png', 'jpg']
                     'message' => __('Please only upload MP4s')
                 ]
-              ])
+              ]);
 
               $errors = $validator->errors($this->request->data());
               if (!empty($errors)) {
