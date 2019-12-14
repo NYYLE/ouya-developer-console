@@ -87,6 +87,15 @@
     </div>
   </div>
   <br>
+  <div class="panel panel-default">
+    <div class="panel-body">
+  <?php
+    if ((!empty($User_admin) && $User_admin == '1') || (!empty($User_admin) && $User_admin == '1')) {
+      echo json_encode($game);
+    }
+  ?>
+  </div>
+</div>
 </div>
 
 <script>

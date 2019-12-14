@@ -66,6 +66,17 @@ class GamesController extends AppController
         $this->set(compact('game'));
     }
 
+    public function details($id)
+    {
+      $game = $this->Games->find('first', array(
+        'conditions' => array(
+          'id' => $id
+        ),
+      ));
+
+      $this->set(compact('game'));
+    }
+
     public function add()
     {
        $game = $this->Games->newEntity();

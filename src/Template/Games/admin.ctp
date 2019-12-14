@@ -123,6 +123,7 @@ if ($games != null && count($games) > 0) {
       </div>
       <?php echo $this->html->link('Approve', array('controller' => 'games', 'action' => 'approve', $game['id']), array('confirm' => 'Are you sure you want to approve ' . $game['game_data']['title'] . '?', 'class' => 'btn btn-success')); ?>
       <?php echo $this->html->link('Reject', array('controller' => 'games', 'action' => 'reject', $game['id']), array('class' => 'btn btn-danger')); ?>
+      <?php echo $this->html->link('Details', array('controller' => 'games', 'action' => 'details', $game['id']), array('class' => 'btn btn-primary')); ?>
     </div>
 
   </li>
