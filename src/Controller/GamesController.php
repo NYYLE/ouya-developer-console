@@ -64,6 +64,7 @@ class GamesController extends AppController
         $game = $response->getJson();
 
         $this->set(compact('game'));
+        $this->set(compact('response'));
     }
 
     public function add()
@@ -306,30 +307,34 @@ class GamesController extends AppController
                     'message' => __('Please only upload APKs')
                 ]
               ])
+              ->allowEmptyFile('apk')
               ->add('discover', [
                 'validExtension' => [
                     'rule' => ['extension',['png']], // default  ['gif', 'jpeg', 'png', 'jpg']
                     'message' => __('Please only upload PNGs')
                 ]
               ])
+              ->allowEmptyFile('discover')
               ->add('screenshot[]', [
                 'validExtension' => [
                     'rule' => ['extension',['png']], // default  ['gif', 'jpeg', 'png', 'jpg']
                     'message' => __('Please only upload PNGs')
                 ]
               ])
+              ->allowEmptyFile('screenshot[]')
               ->add('video', [
                 'validExtension' => [
                     'rule' => ['extension',['mp4']], // default  ['gif', 'jpeg', 'png', 'jpg']
                     'message' => __('Please only upload MP4s')
                 ]
-              ]);
+              ])
+              ->allowEmptyFile('video');
 
               $errors = $validator->errors($this->request->data());
               if (!empty($errors)) {
                   $session->write('Session_errors', $errors);
                   $this->Flash->error(__('Please fix the errors below.'));
-                  return $this->redirect(['controller' => 'games', 'action' => 'edit']);
+                  return $this->redirect(['controller' => 'games', 'action' => 'edit', $package_name]);
               }
 
           $changes = array();

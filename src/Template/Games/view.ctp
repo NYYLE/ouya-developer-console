@@ -86,6 +86,11 @@
       </div>
     </div>
   </div>
+  <p>
+  <?php
+  echo $response;
+  ?>
+  </p>
 </div>
 
 <script>
