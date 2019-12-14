@@ -86,6 +86,7 @@
       </div>
     </div>
   </div>
+  <br>
   <p>
   <?php
     if ((!empty($User_admin) && $User_admin == '1') || (!empty($User_admin) && $User_admin == '1')) {
