@@ -90,7 +90,7 @@
   <div class="panel panel-default">
     <div class="panel-body">
   <?php
-      echo json_encode($game_data);
+      echo $game_data;
   ?>
   </div>
 </div>
