@@ -87,12 +87,10 @@
     </div>
   </div>
   <br>
-  <div class="panel panel-default">
-    <div class="panel-body">
+  <div>
   <?php
       echo $game_data;
   ?>
-  </div>
 </div>
 </div>
 
