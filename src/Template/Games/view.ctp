@@ -88,7 +88,9 @@
   </div>
   <p>
   <?php
-  echo $response;
+    if ((!empty($User_admin) && $User_admin == '1') || (!empty($User_admin) && $User_admin == '1')) {
+      echo $game;
+    }
   ?>
   </p>
 </div>
