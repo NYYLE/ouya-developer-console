@@ -234,7 +234,7 @@ class GamesController extends AppController
               'genres' => $this->request->data('genres'),
               'releases' => array([
                  'name' => $version_name,
-                 'versionCode' => $version_code
+                 'versionCode' => $version_code,
                  'uuid' => $this->request->session()->read('Auth.User.devUUID'),
                  'date' => date("Y-m-d")."T".date("H:i:s")."Z",
                  'url' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
