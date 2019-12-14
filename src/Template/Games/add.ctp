@@ -10,7 +10,7 @@
 <h1>Add Game</h1>
 
 <p>
-Please fill in the form below with all the relavant details to your game. Make sure your APK has a valid package name, versionName and versionCode.
+Please fill in the form below with all the relavant details to your game. Make sure your APK has a valid package name, versionName and versionCode and that your videos are MP4 files.
 </p>
 <?php
 
@@ -51,7 +51,7 @@ Please fill in the form below with all the relavant details to your game. Make s
     <label for="id_label" class="select-input-label required" style="color: #4d4d4d; font-weight: bold;">
       Genres<span style="color: #C3232D;"> * </span>
 
-      <select class="genre-input" name="genre[]" multiple="multiple" required value=<?php echo $display['genre'] ?>, error=<?php echo $errors['genre'] ?>>
+      <select class="genre-input" name="genres[]" multiple="multiple" required value=<?php echo $display['genres'] ?>, error=<?php echo $errors['genres'] ?>>
         <?php
         foreach ($genres as $genre) {
         ?>
@@ -62,8 +62,8 @@ Please fill in the form below with all the relavant details to your game. Make s
       </select>
     </label>
     <?php
-    if (!empty($errors['genre'])) {
-      echo "<label class='error-label'>" . $errors['genre'][0] . "</label>";
+    if (!empty($errors['genres'])) {
+      echo "<label class='error-label'>" . $errors['genres'][0] . "</label>";
     }
     // media
     echo $this->Form->control('discover', array('label' => 'Discover Image', 'type' => 'file', 'required' => true, 'value' => $display['discover']));

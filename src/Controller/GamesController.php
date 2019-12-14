@@ -123,7 +123,7 @@ class GamesController extends AppController
                 ]
               ])
               ->allowEmptyFile('video')
-              ->notEmpty('genre[]', 'Please enter at least one genre');
+              ->notEmpty('genres[]', 'Please enter at least one genre');
 
           $errors = $validator->errors($this->request->data());
           if (!empty($errors)) {
@@ -231,10 +231,10 @@ class GamesController extends AppController
               'title' => $this->request->data('title'),
               'description' => $this->request->data('description'),
               'players' => array_map('intval', $this->request->data('players')),
-              'genres' => $this->request->data('genre'),
+              'genres' => $this->request->data('genres'),
               'releases' => array([
                  'name' => $version_name,
-                 'versionCode' => $version_code,
+                 'versionCode' => $version_code
                  'uuid' => $this->request->session()->read('Auth.User.devUUID'),
                  'date' => date("Y-m-d")."T".date("H:i:s")."Z",
                  'url' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
@@ -294,67 +294,136 @@ class GamesController extends AppController
          $this->set('session', $session);
 
         $response = $http->get('https://api.ouya.world/api/v1/gamedata/' . $package_name);
+        //$response = $http->get('https://dev.dcrich.net/api/v1/gamedata/' . $package_name);
         $game = $response->getJson();
 
         if ($this->request->is('post')) {
-          $display = array(
-             'title' => $this->request->data('title'),
-             'description' => $this->request->data('description'),
-             'players' => $this->request->data('players'),
-             'genre' => $this->request->data('genre[]'),
-             'content_rating' => $this->request->data('content_rating'),
-             'discover' => $this->request->data('discover'),
-             'video' => $this->request->data('discover'),
-             'screenshot' => $this->request->data('screenshot[]'),
-             'apk' => $this->request->data('apk'),
-             'website' => $this->request->data('website')
-         );
+          $validator = new Validator();
+          $validator
+              ->notEmpty('title', 'Please add a title')
+              ->notEmpty('discover', 'Please add a description')
+              ->notEmpty('players', 'Please select number of players')
+              ->add('apk', [
+                'validExtension' => [
+                    'rule' => ['extension',['apk']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'message' => __('Please only upload APKs')
+                ]
+              ])
+              ->add('discover', [
+                'validExtension' => [
+                    'rule' => ['extension',['png']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'message' => __('Please only upload PNGs')
+                ]
+              ])
+              ->add('screenshot[]', [
+                'validExtension' => [
+                    'rule' => ['extension',['png']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'message' => __('Please only upload PNGs')
+                ]
+              ])
+              ->add('video', [
+                'validExtension' => [
+                    'rule' => ['extension',['mp4']], // default  ['gif', 'jpeg', 'png', 'jpg']
+                    'message' => __('Please only upload MP4s')
+                ]
+              ])
+              ->allowEmptyFile('video')
+              ->notEmpty('genres[]', 'Please enter at least one genre');
 
-         $session->write('Session_display', $display);
+              $errors = $validator->errors($this->request->data());
+              if (!empty($errors)) {
+                  $session->write('Session_errors', $errors);
+                  $this->Flash->error(__('Please fix the errors below.'));
+                  return $this->redirect(['controller' => 'games', 'action' => 'add']);
+              }
 
           $changes = array();
           foreach ($this->request->data() as $field => $change) {
             switch ($field) {
               case 'screenshot[]':
                 $index = 1;
+
+                $media = array();
+
                 foreach ($change as $screenshot) {
-                  $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
-                  $file = file_get_contents($screenshot['tmp_name']);
-                  $write = fwrite($stream, $file);
-                  fclose($stream);
+                  if (isset($screenshot['tmp_name']) && $screenshot['error'] == 0) {
+                      $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '.png', 'w');
+                      $file = file_get_contents($screenshot['tmp_name']);
+                      $write = fwrite($stream, $file);
+                      fclose($stream);
 
-                  $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '-thumb.png', 'w');
-                  $thumb_file = file_get_contents($screenshot['tmp_name']);
-                  fwrite($stream, $thumb_file);
-                  fclose($stream);
+                      $stream = fopen("ssh2.sftp://$sftp$remote_file" . "ss" . $index . '-thumb.png', 'w');
+                      $thumb_file = file_get_contents($screenshot['tmp_name']);
+                      fwrite($stream, $thumb_file);
+                      fclose($stream);
 
-                  $details[] = array(
-                    'type' => 'image',
-                    'url' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
-                    'thumb' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
-                  );
+                      $media[] = array(
+                        'type' => 'image',
+                        'url' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+                        'thumb' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
+                      );
+                  }
 
                   $index++;
                 }
+
+                // check if array is empty
                 $changes[$field] = $change;
+
                 break;
               case 'apk':
-                $changes[$field] = $change;
+                if (isset($change['tmp_name']) && $change['error'] == 0) {
+                  $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '-' . $version_name . '.apk', 'w');
+                  $file = htmlspecialchars(file_get_contents($change['tmp_name'],false,$context));
+                  $write = fwrite($stream, $file);
+                  fclose($stream);
+
+                  $changes[$field] = $change;
+                }
                 break;
               case 'discover':
-                $changes[$field] = $change;
+                if (isset($change['tmp_name']) && $change['error'] == 0) {
+                  $stream = fopen("ssh2.sftp://$sftp$remote_file" . 'discover.png', 'w');
+                  $file = file_get_contents($change['tmp_name']);
+                  $write = fwrite($stream, $file);
+                  fclose($stream);
+
+                  $changes[$field] = $change;
+                }
+                break;
+              case 'video':
+                // if (isset($change['tmp_name']) && $change['error'] == 0) {
+                //   $stream = fopen("ssh2.sftp://$sftp$remote_file" . 'discover.png', 'w');
+                //   $file = file_get_contents($change['tmp_name']);
+                //   $write = fwrite($stream, $file);
+                //   fclose($stream);
+                //
+                //   $changes[$field] = $change;
+                // }
                 break;
               default:
-                $changes[$field] = $change;
+                if (isset($change) && !empty($change)) {
+                    $changes[$field] = $change;
+                }
+                debug($changes);
                 break;
             }
 
           }
 
-          $response = $http->patch('https://api.ouya.world/api/v1/gamedata/' . $package_name, [
-           'title' => 'test',
-           'body' => json_encode($changes)
-          ]);
+          $response = $http->patch('https://api.ouya.world/api/v1/gamedata/' . $package_name, json_encode($changes), ['type' => 'json']);
+          debug($response);
+        } else {
+            $this->request->data['title'] = $game['title'];
+            $this->request->data['description'] = $game['description'];
+            $this->request->data['players[]'] = $game['players'];
+            $this->request->data['genre[]'] = $game['genres'];
+            $this->request->data['content_rating'] = $game['contentRating'];
+            $this->request->data['discover'] = $game['discover'];
+            //$this->request->data['video'] = $game['media']['video'],
+            //$this->request->data['screenshot[]'] = $game['media'],
+            $this->request->data['apk'] = $game['releases'][0]['url'];
+            $this->request->data['website'] = $game['website'];
         }
 
         $this->set('game', $game);
