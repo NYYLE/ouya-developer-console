@@ -68,11 +68,7 @@ class GamesController extends AppController
 
     public function details($id)
     {
-      $game = $this->Games->find('all', array(
-        'conditions' => array(
-          'id' => $id
-        ),
-      ));
+      $game = $this->Games->get($id);
 
       $this->set(compact('game'));
     }
