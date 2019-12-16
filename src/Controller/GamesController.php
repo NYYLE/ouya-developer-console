@@ -217,8 +217,8 @@ class GamesController extends AppController
 
                    $details[] = array(
                      'type' => 'image',
-                     'url' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
-                     'thumb' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
+                     'url' => 'http://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+                     'thumb' => 'http://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
                    );
                    $index++;
                 }
@@ -232,7 +232,7 @@ class GamesController extends AppController
 
              $details[] = array(
                'type' => 'video',
-               'url' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+               'url' => 'http://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
              );
            }
 
@@ -247,14 +247,14 @@ class GamesController extends AppController
                  'versionCode' => $version_code,
                  'uuid' => $this->request->session()->read('Auth.User.devUUID'),
                  'date' => date("Y-m-d")."T".date("H:i:s")."Z",
-                 'url' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
+                 'url' => 'http://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
                  'size' => filesize($this->request->data('apk')['tmp_name']),
                  'md5sum' => $md5_sum,
                  'publicSize' => 0,
                  'nativeSize' => 0,
                ]),
                'media' => $details,
-               'discover' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . 'discover.png',
+               'discover' => 'http://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . 'discover.png',
                'developer' => array(
                  'uuid' => $this->request->session()->read('Auth.User.devUUID'),
                  'name' => $this->request->session()->read('Auth.User.username'),
@@ -367,8 +367,8 @@ class GamesController extends AppController
 
                       $media[] = array(
                         'type' => 'image',
-                        'url' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
-                        'thumb' => 'https://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
+                        'url' => 'http://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'.png',
+                        'thumb' => 'http://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'ss' . $index .'-thumb.png',
                       );
                   }
 
@@ -417,7 +417,7 @@ class GamesController extends AppController
                     'versionCode' => $version_code,
                     'uuid' => $this->request->session()->read('Auth.User.devUUID'),
                     'date' => date("Y-m-d")."T".date("H:i:s")."Z",
-                    'url' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
+                    'url' => 'http://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
                     'size' => filesize($change['tmp_name']),
                     'md5sum' => $md5_sum,
                     'publicSize' => 0,
@@ -432,7 +432,7 @@ class GamesController extends AppController
                   $write = fwrite($stream, $file);
                   fclose($stream);
 
-                  $discover = 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . 'discover.png';
+                  $discover = 'http://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . 'discover.png';
 
                   $changes['discover'] = $discover;
                 }
