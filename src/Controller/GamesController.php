@@ -153,8 +153,7 @@ class GamesController extends AppController
           $version_code = $manifest->getVersionCode();
           $min_sdk_level = $manifest->getMinSdkLevel();
           $min_sdk_platform = $manifest->getMinSdk()->platform;
-          $target_sdk_level = $manifest->getTargetSdkLevel();
-          $target_sdk_platform = $manifest->getTargetSdk()->platform;
+        
           $md5_sum = md5_file($this->request->data('apk')['tmp_name']);
 
           if ($package_name == null || $version_name == null || $version_code == null || $min_sdk_level == null || $min_sdk_platform == null) {
