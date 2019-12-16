@@ -80,8 +80,9 @@ class GamesController extends AppController
     {
        $game = $this->Games->newEntity();
 
-       $this->loadModel('Genres');
-       $genres = $this->Genres->find('all');
+       $http = new Client();
+
+       $genres = $http->get('https://api.ouya.world/api/v1/genres')->getJson()['results'];
        $this->set(compact('genres'));
 
         $session = $this->getRequest()->getSession();
@@ -153,7 +154,7 @@ class GamesController extends AppController
           $version_code = $manifest->getVersionCode();
           $min_sdk_level = $manifest->getMinSdkLevel();
           $min_sdk_platform = $manifest->getMinSdk()->platform;
-        
+
           $md5_sum = md5_file($this->request->data('apk')['tmp_name']);
 
           if ($package_name == null || $version_name == null || $version_code == null || $min_sdk_level == null || $min_sdk_platform == null) {
@@ -295,8 +296,7 @@ class GamesController extends AppController
     {
         $http = new Client();
 
-        $this->loadModel('Genres');
-        $genres = $this->Genres->find('all');
+        $genres = $http->get('https://api.ouya.world/api/v1/genres')->getJson()['results'];
         $this->set(compact('genres'));
 
          $session = $this->getRequest()->getSession();
@@ -376,17 +376,53 @@ class GamesController extends AppController
                 }
 
                 // check if array is empty
-                $changes[$field] = $change;
+                $changes['media'] = $media;
 
                 break;
               case 'apk':
                 if (isset($change['tmp_name']) && $change['error'] == 0) {
+                  $apk = new \ApkParser\Parser($this->request->data('apk')['tmp_name']);
+
+                  $manifest = $apk->getManifest();
+                  $permissions = $manifest->getPermissions();
+
+                  $package_name = $manifest->getPackageName();
+
+                  $version_name = $manifest->getVersionName();
+                  $version_code = $manifest->getVersionCode();
+                  $min_sdk_level = $manifest->getMinSdkLevel();
+                  $min_sdk_platform = $manifest->getMinSdk()->platform;
+
+                  $md5_sum = md5_file($change['tmp_name']);
+
+                  if ($package_name == null || $version_name == null || $version_code == null || $min_sdk_level == null || $min_sdk_platform == null) {
+                    $this->Flash->error(__('Please make sure APK has valid attributes'));
+                    return $this->redirect(['action' => 'edit', $package_name]);
+                  }
+
+                  foreach ($game['releases'] as $release) {
+                    if ($release['name'] == $version_name) {
+                      $this->Flash->error(__('Please make sure you have updated the version name and code of yout game'));
+                      return $this->redirect(['action' => 'edit', $package_name]);
+                    }
+                  }
+
                   $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '-' . $version_name . '.apk', 'w');
                   $file = file_get_contents($change['tmp_name']);
                   $write = fwrite($stream, $file);
                   fclose($stream);
 
-                  $changes[$field] = $change;
+                  $changes['releases'] = array(
+                    'name' => $version_name,
+                    'versionCode' => $version_code,
+                    'uuid' => $this->request->session()->read('Auth.User.devUUID'),
+                    'date' => date("Y-m-d")."T".date("H:i:s")."Z",
+                    'url' => 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
+                    'size' => filesize($change['tmp_name']),
+                    'md5sum' => $md5_sum,
+                    'publicSize' => 0,
+                    'nativeSize' => 0,
+                  );
                 }
                 break;
               case 'discover':
@@ -396,7 +432,9 @@ class GamesController extends AppController
                   $write = fwrite($stream, $file);
                   fclose($stream);
 
-                  $changes[$field] = $change;
+                  $discover = 'https://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . 'discover.png';
+
+                  $changes['discover'] = $discover;
                 }
                 break;
               case 'video':

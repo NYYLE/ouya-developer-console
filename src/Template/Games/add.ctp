@@ -55,7 +55,7 @@ Please fill in the form below with all the relavant details to your game. Make s
         <?php
         foreach ($genres as $genre) {
         ?>
-        <option value="<?php echo $genre['name'] ?>"><?php echo $genre['name'] ?></option>
+        <option value="<?php echo $genre['genreName'] ?>"><?php echo $genre['genreName'] ?></option>
         <?php
         }
         ?>

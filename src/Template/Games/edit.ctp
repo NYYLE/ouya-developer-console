@@ -47,7 +47,7 @@ Please fill in the form below with the changes to your game. Make sure your APK 
         <?php
         foreach ($genres as $genre) {
         ?>
-        <option value="<?php echo $genre['name'] ?>"><?php echo $genre['name'] ?></option>
+        <option value="<?php echo $genre['genreName'] ?>"><?php echo $genre['genreName'] ?></option>
         <?php
         }
         ?>
