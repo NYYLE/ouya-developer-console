@@ -21,6 +21,7 @@
     position: absolute;
     top: 27px;
     left: 30px;
+    object-fit: contain;
 }
 
 .gameslist .gamelistDetails {
@@ -121,13 +122,24 @@ if ($games != null && count($games) > 0) {
     ?>
   <li style="<?php echo $style ?>">
     <a href="games/view/<?php echo $game['packageName'] ?>">
-      <img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['discover']) ?>" data-original="<?php echo $game['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
+      <img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['discover']) ?>" data-original="<?php echo $game['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block; width:235; height:132;">
       <noscript><img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['discover']) ?>" width="235" height="132" alt="100 Rogues"></noscript>
       <div class="gamelistDetails">
         <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
+        <?php
+        if (!empty($game['rating'])) {
+        ?>
         <span class="stars"><span style="width: <?php echo $game['rating']['average'] * 20 ?>px;"></span></span>
         <span class="ratingCount">&nbsp;(<?php echo $game['rating']['count'] ?>)</span>
+        <?php
+        }
+
+        if (!empty($game['rating'])) {
+        ?>
         <h4 class="gamelistRelease"><?php echo explode(' by ', $game['overview'])[0] ?></h4>
+        <?php
+        }
+        ?>
         <h4 class="gamelistDeveloper"><?php echo $game['developer']['name'] ?></h4>
         <div class="gameTaglist">
           <?php foreach ($game['genres'] as $tag) {

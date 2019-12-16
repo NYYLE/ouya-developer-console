@@ -190,7 +190,7 @@ class GamesController extends AppController
           $result2 = ssh2_sftp_mkdir($sftp , '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name);
 
           $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '-' . $version_name . '.apk', 'w');
-          $file = htmlspecialchars(file_get_contents($this->request->data('apk')['tmp_name'],false,$context));
+          $file = file_get_contents($this->request->data('apk')['tmp_name']);
           $write = fwrite($stream, $file);
           fclose($stream);
 
@@ -383,7 +383,7 @@ class GamesController extends AppController
               case 'apk':
                 if (isset($change['tmp_name']) && $change['error'] == 0) {
                   $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '-' . $version_name . '.apk', 'w');
-                  $file = htmlspecialchars(file_get_contents($change['tmp_name'],false,$context));
+                  $file = file_get_contents($change['tmp_name']);
                   $write = fwrite($stream, $file);
                   fclose($stream);
 
