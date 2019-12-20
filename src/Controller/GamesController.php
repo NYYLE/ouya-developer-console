@@ -168,6 +168,8 @@ class GamesController extends AppController
           $dev_uuid = $this->request->session()->read('Auth.User.devUUID');
           $remote_file = '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/';
 
+          $guid = $this->getGUID();
+
           ini_set('default_socket_timeout', 2);
 
           $context = stream_context_create(
@@ -198,6 +200,8 @@ class GamesController extends AppController
           $file = file_get_contents($this->request->data('discover')['tmp_name']);
           $write = fwrite($stream, $file);
           fclose($stream);
+
+          $content_ratings = array('Everybody', '9+', '12+', '17+');
 
           $screenshots = array();
           if (!empty($this->request->data('screenshot'))) {
@@ -245,9 +249,9 @@ class GamesController extends AppController
               'releases' => array([
                  'name' => $version_name,
                  'versionCode' => $version_code,
-                 'uuid' => $this->request->session()->read('Auth.User.devUUID'),
+                 'uuid' => $guid,
                  'date' => date("Y-m-d")."T".date("H:i:s")."Z",
-                 'url' => 'http://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
+                 'url' => 'http://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
                  'size' => filesize($this->request->data('apk')['tmp_name']),
                  'md5sum' => $md5_sum,
                  'publicSize' => 0,
@@ -256,13 +260,13 @@ class GamesController extends AppController
                'media' => $details,
                'discover' => 'http://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . 'discover.png',
                'developer' => array(
-                 'uuid' => $this->request->session()->read('Auth.User.devUUID'),
+                 'uuid' => $dev_uuid,
                  'name' => $this->request->session()->read('Auth.User.username'),
                  'supportEmail' => $this->request->session()->read('Auth.User.email'),
                  'supportPhone' => null,
 
                ),
-               'contentRating' => $this->request->data('content_rating'),
+               'contentRating' => $content_ratings[$this->request->data('content_rating')],
                'website' => $this->request->data('website'),
                'firstPublishedAt' => date("Y-m-d")."T".date("H:i:s")."Z",
 
@@ -299,12 +303,31 @@ class GamesController extends AppController
         $genres = $http->get('https://api.ouya.world/api/v1/genres')->getJson()['results'];
         $this->set(compact('genres'));
 
+        $content_ratings = array('Everybody', '9+', '12+', '17+');
+
          $session = $this->getRequest()->getSession();
          $this->set('session', $session);
 
         $response = $http->get('https://api.ouya.world/api/v1/gamedata/' . $package_name);
         //$response = $http->get('https://dev.dcrich.net/api/v1/gamedata/' . $package_name);
         $game = $response->getJson();
+
+        $host = 'statics.ouya.world';
+        $username = 'dh_q4dnv3';
+        $password = 'av^6H2^7';
+        $dev_uuid = $this->request->session()->read('Auth.User.devUUID');
+        $remote_file = '/home/' . $username . '/statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/';
+
+        $guid = $this->getGUID();
+
+        $connection = ssh2_connect($host, 22);
+        ssh2_auth_password($connection, $username, $password);
+
+        $sftp = ssh2_sftp($connection);
+        if ($sftp == false) {
+          $this->Flash->error(__('Upload Failed, please contact NYYLE or Szeraax on discord.'));
+          return $this->redirect(['controller' => 'games', 'action' => 'edit', $package_name]);
+        }
 
         if ($this->request->is('post')) {
           $validator = new Validator();
@@ -346,9 +369,10 @@ class GamesController extends AppController
               }
 
           $changes = array();
+
           foreach ($this->request->data() as $field => $change) {
             switch ($field) {
-              case 'screenshot[]':
+              case 'screenshot':
                 $index = 1;
 
                 $media = array();
@@ -375,8 +399,9 @@ class GamesController extends AppController
                   $index++;
                 }
 
-                // check if array is empty
-                $changes['media'] = $media;
+                if (!empty($media) && $media != [] && count($media) > 0) {
+                  $changes['media'] = $media;
+                }
 
                 break;
               case 'apk':
@@ -402,27 +427,29 @@ class GamesController extends AppController
 
                   foreach ($game['releases'] as $release) {
                     if ($release['name'] == $version_name) {
-                      $this->Flash->error(__('Please make sure you have updated the version name and code of yout game'));
+                      $this->Flash->error(__('Please make sure you have updated the version name and code of your game'));
                       return $this->redirect(['action' => 'edit', $package_name]);
                     }
                   }
 
+                  if (isset($this->request->data('apk')['tmp_name']) && $this->request->data('apk')['error'] == 0) {
                   $stream = fopen("ssh2.sftp://$sftp$remote_file" . $package_name . '-' . $version_name . '.apk', 'w');
                   $file = file_get_contents($change['tmp_name']);
                   $write = fwrite($stream, $file);
                   fclose($stream);
 
-                  $changes['releases'] = array(
+                  $changes['releases'][] = array(
                     'name' => $version_name,
                     'versionCode' => $version_code,
-                    'uuid' => $this->request->session()->read('Auth.User.devUUID'),
+                    'uuid' => $guid,
                     'date' => date("Y-m-d")."T".date("H:i:s")."Z",
-                    'url' => 'http://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
+                    'url' => 'http://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . $package_name . '-' . $version_name . '.apk',
                     'size' => filesize($change['tmp_name']),
                     'md5sum' => $md5_sum,
                     'publicSize' => 0,
                     'nativeSize' => 0,
                   );
+                }
                 }
                 break;
               case 'discover':
@@ -432,7 +459,7 @@ class GamesController extends AppController
                   $write = fwrite($stream, $file);
                   fclose($stream);
 
-                  $discover = 'http://statics.ouya.world/' . $this->request->session()->read('Auth.User.devUUID') . '/' . $package_name . '/' . 'discover.png';
+                  $discover = 'http://statics.ouya.world/' . $dev_uuid . '/' . $package_name . '/' . 'discover.png';
 
                   $changes['discover'] = $discover;
                 }
@@ -446,6 +473,10 @@ class GamesController extends AppController
                 //
                 //   $changes[$field] = $change;
                 // }
+                break;
+                case 'content_rating':
+                $changes[$field] = $content_ratings[$change];
+
                 break;
               default:
                 if (isset($change) && !empty($change)) {

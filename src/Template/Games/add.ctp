@@ -43,7 +43,7 @@ Please fill in the form below with all the relavant details to your game. Make s
 
     echo $this->Form->label('content_rating', 'Content Rating', array('style' => 'font-weight: bold', 'id' => 'content_rating_id'));
     echo $this->Form->select('content_rating', array('Everybody', '9+', '12+', '17+'), array('required' => true));
-    if (!empty($errors['players'])) {
+    if (!empty($errors['content_rating'])) {
       echo "<label>" . $errors['content_rating'][0] . "</label>";
     }
 
