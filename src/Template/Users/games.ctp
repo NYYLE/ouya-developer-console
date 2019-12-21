@@ -88,14 +88,15 @@ span.ratingCount {
     margin-right: 14px;
 }
 </style>
-
+<?php
+if ($rejected_games != null && count($rejected_games) > 0) {
+   ?>
 <h1>Rejected Games</h1>
 
 <!-- Here's where we iterate through our $games query object, printing out article info -->
 <ul class="gameslist">
 <?php
 $i = 0;
-if ($rejected_games != null && count($rejected_games) > 0) {
   foreach ($rejected_games as $game) {
     //debug($game);
     if ($i % 2) {
@@ -126,22 +127,18 @@ if ($rejected_games != null && count($rejected_games) > 0) {
   <?php
   $i++;
   }
-} else {
-  ?>
-  <p>
-  You have no rejected games.
-  </p>
-  <?php
-} ?>
+}
+?>
 </ul>
 
+<?php
+if ($submitted_games != null && count($submitted_games) > 0) {
+  ?>
 <h1>Submitted Games</h1>
 
-<!-- Here's where we iterate through our $games query object, printing out article info -->
 <ul class="gameslist">
 <?php
 $i = 0;
-if ($submitted_games != null && count($submitted_games) > 0) {
   foreach ($submitted_games as $game) {
   //  debug($game);
     if ($i % 2) {
@@ -168,17 +165,58 @@ if ($submitted_games != null && count($submitted_games) > 0) {
         <div class="clearfix">
         </div>
       </div>
+      <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['game_data']['packageName']), array('class' => 'btn btn-secondary')); ?>
     </div>
   </a>
   </li>
   <?php
   $i++;
   }
-} else {
+}
+?>
+</ul>
+
+<?php
+if ($users_games != null && count($users_games) > 0) {
   ?>
-  <p>
-  You have not submitted any games.
-  </p>
+<h1>Submitted Games</h1>
+
+<ul class="gameslist">
+<?php
+$i = 0;
+  foreach ($users_games as $game) {
+  //  debug($game);
+    if ($i % 2) {
+      $style = "border-radius: 10px;";
+    } else {
+      $style = "background-color: #ffffff; border-radius: 10px;";
+    }
+    ?>
+  <li style="<?php echo $style ?>">
+    <a href="games/view/<?php echo $game['packageName'] ?>">
+      <img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['game_data']['discover']) ?>" data-original="<?php echo $game['game_data']['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
+      <noscript><img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['game_data']['discover']) ?>" width="235" height="132" alt="100 Rogues"></noscript>
+      <div class="gamelistDetails">
+        <h3 class="gamelistTitle"><?php echo $game['game_data']['title'] ?></h3>
+        <h4 class="gamelistRelease"><?php echo explode(' by ', $game['game_data']['overview'])[0] ?></h4>
+        <h4 class="gamelistDeveloper"><?php echo $game['game_data']['developer']['name'] ?></h4>
+        <div class="gameTaglist">
+          <?php foreach ($game['game_data']['genres'] as $tag) {
+            ?>
+            <div class="gameTag"><?php echo $tag ?></div>
+            <?php
+          }
+          ?>
+        <div class="clearfix">
+        </div>
+      </div>
+      <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['game_data']['packageName']), array('class' => 'btn btn-secondary')); ?>
+    </div>
+  </a>
+  </li>
   <?php
-}?>
+  $i++;
+  }
+}
+?>
 </ul>

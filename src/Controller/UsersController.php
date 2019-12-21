@@ -43,6 +43,9 @@ class UsersController extends AppController {
            $rejected_games[] = $game;
          }
 
+         $response = $http->get('https://dev.dcrich.net/api/v1/developers/' . $this->request->session()->read('Auth.User.devUUID') . '/gamedata');
+         $users_games = $response->getJson();
+
          //debug($games);
          $this->set('rejected_games', $rejected_games);
          $this->set('submitted_games', $submitted_games);
