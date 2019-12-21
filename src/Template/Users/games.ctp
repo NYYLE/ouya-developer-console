@@ -179,7 +179,7 @@ $i = 0;
 <?php
 if ($users_games != null && count($users_games) > 0) {
   ?>
-<h1>Submitted Games</h1>
+<h1>My Games</h1>
 
 <ul class="gameslist">
 <?php
