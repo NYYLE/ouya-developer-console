@@ -47,8 +47,6 @@ class UsersController extends AppController {
          $response = $http->get('https://api.ouya.world/api/v1/developers/' . $this->request->session()->read('Auth.User.devUUID') . '/gamedata');
          $users_games = $response->getJson();
 
-
-         debug($users_games);
          $this->set('rejected_games', $rejected_games);
          $this->set('submitted_games', $submitted_games);
          $this->set('users_games', $users_games['results']);
