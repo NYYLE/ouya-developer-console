@@ -194,10 +194,11 @@ $i = 0;
 ?>
 </ul>
 
+<h1>My Games</h1>
+
 <?php
 if ($users_games != null && count($users_games) > 0) {
   ?>
-<h1>My Games</h1>
 
 <ul class="gameslist">
 <?php
@@ -235,6 +236,10 @@ $i = 0;
   <?php
   $i++;
   }
+} else {
+  ?>
+  <p>You have not submitted any games yet</p>
+  <?php
 }
 ?>
 </ul>
