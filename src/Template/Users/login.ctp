@@ -5,6 +5,6 @@ echo $this->Form->create();
 echo $this->Form->control('username');
 echo $this->Form->control('password');
 echo $this->Form->button('Log In', array('class' => 'btn btn-secondary', 'type' => 'submit'));
-echo $this->Html->link('Create Account', array('controller' => 'users', 'action' => 'register'), array('class' => 'btn btn-secondary'));
+echo $this->Html->link('Create Account', array('controller' => 'users', 'action' => 'register'), array('class' => 'btn btn-secondary pull-right'));
 echo $this->Form->end()
 ?>

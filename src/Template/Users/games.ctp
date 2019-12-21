@@ -9,7 +9,7 @@
 
 .gameslist li {
     margin: 0;
-    padding-bottom: 5;
+    padding-bottom: 5px;
     height: 195px;
     /* background: #fff; */
     position: relative;
@@ -21,6 +21,7 @@
     position: absolute;
     top: 27px;
     left: 30px;
+    object-fit: contain;
 }
 
 .gameslist .gamelistDetails {
@@ -34,12 +35,12 @@
     font-size: 24px;
     line-height: 25px;
     color: #fc4422;
-    margin: 0 0 4px 0;
+    margin: 0;
 }
 
 span.stars, span.stars span {
     display: block;
-    background: url(/web/20190522062303im_/https://www.ouya.tv/wp-content/themes/ouya/images/star-20x20.png) 0 -20px repeat-x;
+    background: url(img/star-20x20.png) 0 -20px repeat-x;
     width: 100px;
     height: 20px;
     float: left;
@@ -51,6 +52,22 @@ span.ratingCount {
     font-size: .9em;
     margin: 4px 0;
     color: #3E3D45;
+}
+
+.gamelistDetails .stars {
+    margin: 4px 0 4px 0;
+}
+
+span.ratingCount {
+    float: left;
+    line-height: 24px;
+    font-size: .9em;
+    margin: 4px 0;
+    color: #3E3D45;
+}
+
+span.stars span {
+    background-position: 0 0;
 }
 
 .gamelistRelease {
@@ -67,12 +84,13 @@ span.ratingCount {
     font-size: 14px;
     line-height: 14px;
     color: #3e3d45;
-    margin: 9px 0 0 0;
+    margin: 0;
 }
 
 .gameslist .gameTaglist {
     padding-top: 10px;
     padding-bottom: 10px;
+
 }
 
 .gameTag {
@@ -194,14 +212,14 @@ $i = 0;
     ?>
   <li style="<?php echo $style ?>">
     <a href="games/view/<?php echo $game['packageName'] ?>">
-      <img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['game_data']['discover']) ?>" data-original="<?php echo $game['game_data']['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block;">
-      <noscript><img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['game_data']['discover']) ?>" width="235" height="132" alt="100 Rogues"></noscript>
+      <img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['discover']) ?>" data-original="<?php echo $game['discover'] ?>" width="235" height="132" alt="<?php echo $game['title'] ?>" style="display: block; width:235; height:132;">
+      <noscript><img class="posterImage" src="<?php echo str_replace('http://', 'https://', $game['discover']) ?>" width="235" height="132" alt="100 Rogues"></noscript>
       <div class="gamelistDetails">
-        <h3 class="gamelistTitle"><?php echo $game['game_data']['title'] ?></h3>
-        <h4 class="gamelistRelease"><?php echo explode(' by ', $game['game_data']['overview'])[0] ?></h4>
-        <h4 class="gamelistDeveloper"><?php echo $game['game_data']['developer']['name'] ?></h4>
+        <h3 class="gamelistTitle"><?php echo $game['title'] ?></h3>
+        <h4 class="gamelistRelease"><?php echo explode(' by ', $game['overview'])[0] ?></h4>
+        <h4 class="gamelistDeveloper"><?php echo $game['developer']['name'] ?></h4>
         <div class="gameTaglist">
-          <?php foreach ($game['game_data']['genres'] as $tag) {
+          <?php foreach ($game['genres'] as $tag) {
             ?>
             <div class="gameTag"><?php echo $tag ?></div>
             <?php
@@ -210,7 +228,7 @@ $i = 0;
         <div class="clearfix">
         </div>
       </div>
-      <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['game_data']['packageName']), array('class' => 'btn btn-secondary')); ?>
+      <?php echo $this->html->link('Edit', array('controller' => 'games', 'action' => 'edit', $game['packageName']), array('class' => 'btn btn-secondary')); ?>
     </div>
   </a>
   </li>
