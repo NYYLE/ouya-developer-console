@@ -44,7 +44,7 @@ class UsersController extends AppController {
          }
 
          $http = new Client();
-         $response = $http->get('https://dev.dcrich.net/api/v1/developers/' . $this->request->session()->read('Auth.User.devUUID') . '/gamedata');
+         $response = $http->get('https://api.ouya.world/api/v1/developers/' . $this->request->session()->read('Auth.User.devUUID') . '/gamedata');
          $users_games = $response->getJson();
 
          //debug($games);
